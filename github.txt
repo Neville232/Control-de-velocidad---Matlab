@@ -1,0 +1,7 @@
+git init
+git add .
+git status
+git commit -m "Primer commit"
+
+git remote add origin https://
+git push -u origin master
