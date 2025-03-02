@@ -6,3 +6,7 @@ git commit -m "Primer commit"
 git remote add origin https://github.com/Neville232/Control-de-velocidad---Matlab.git
 git branch -M main
 git push -u origin main
+
+git add .
+git commit -m "Descripción de los cambios realizados"
+git push
