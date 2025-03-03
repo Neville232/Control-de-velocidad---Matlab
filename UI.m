@@ -1,4 +1,6 @@
- function varargout = UI(varargin)
+%% Antes de modificar
+
+function varargout = UI(varargin)
 % UI MATLAB code for UI.fig
 %      UI, by itself, creates a new UI or raises the existing
 %      singleton*.

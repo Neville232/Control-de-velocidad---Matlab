@@ -12,7 +12,7 @@ int int_encoder = 0;            // Contador del encoder
 int count = 0;                  // Contador para el Timer0
 int resolucion = 8;             // Resolucion del encoder (8 pulsos por vuelta)
 
-int duty = 50;                  // Ciclo de trabajo inicial 
+int duty = 100;                  // Ciclo de trabajo inicial 
 int estado = 0;                 // Motor encendido o apagado
 const int16 duty_porcentual[101] = {
     0, 3, 7, 10, 14, 17, 21, 24, 28, 32, 35, 39, 42, 46, 49, 53, 56, 60, 64, 67, 71, 74, 78, 81, 85, 89, 92, 96, 99, 103, 106, 110, 113, 117, 121, 124, 128, 131, 135, 138, 142, 145, 149, 153, 156, 160, 163, 167, 170, 174, 178, 181, 185, 188, 192, 195, 199, 202, 206, 210, 213, 217, 220, 224, 227, 231, 234, 238, 242, 245, 249, 252, 256, 259, 263, 267, 270, 274, 277, 281, 284, 288, 291, 295, 299, 302, 306, 309, 313, 316, 320, 323, 327, 331, 334, 338, 341, 345, 348, 352, 356

@@ -1,9 +1,9 @@
-D G "__PCH__" 0 108 ""5.115""
-D G "__DEVICE__" 0 108 "4550"
-D G "__DATE__" 0 108 ""03-Mar-25""
-D G "__TIME__" 0 108 ""10:14:57""
-D G "_UNICODE" 0 108 ""?""
-D G "__EVAL" 0 108 ""?"" "Standard Header file for the PIC18F45K50 device ////////////////"
+D G "__PCH__" 0 117 ""5.115""
+D G "__DEVICE__" 0 117 "4550"
+D G "__DATE__" 0 117 ""03-Mar-25""
+D G "__TIME__" 0 117 ""12:46:25""
+D G "_UNICODE" 0 117 ""?""
+D G "__EVAL" 0 117 ""?"" "Standard Header file for the PIC18F45K50 device ////////////////"
 c L "set_tris_a" 1 3 6 "FUNCTION"
 F N "set_tris_a" 1 46 ""
 V L "value" 1 46 "int8" `55 
@@ -1460,7 +1460,7 @@ F N "EXT_isr" 0 35 ""
 F G "EXT_isr" 0 35 "void()" `758 
 C L "EXT_isr" 0 7 1 "FUNCTION"
 F N "TIMER0_isr" 0 41 ""
-F G "TIMER0_isr" 0 41 "void(int16 )" `759 
+F G "TIMER0_isr" 0 41 "void()" `759 
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
