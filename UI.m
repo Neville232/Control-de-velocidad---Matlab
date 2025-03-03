@@ -22,7 +22,7 @@
 
 % Edit the above text to modify the response to help UI
 
-% Last Modified by GUIDE v2.5 01-Mar-2025 20:56:17
+% Last Modified by GUIDE v2.5 03-Mar-2025 09:41:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -437,3 +437,25 @@ function calcular_controlador_Callback(hObject, eventdata, handles)
 % hObject    handle to calcular_controlador (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in monitorear.
+function monitorear_Callback(hObject, eventdata, handles)
+% hObject    handle to monitorear (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Verificar si el objeto serial existe y está conectado
+if isfield(handles, 's') && isvalid(handles.s) && strcmp(handles.s.Status, 'open')
+    % Guardar el objeto serial en la base de datos de la aplicación
+    setappdata(0, 'SerialObject', handles.s);
+
+    % Cerrar la figura actual
+    delete(handles.figure1);
+
+    % Abrir la nueva figura UImonitoreo
+    UImonitoreo;
+else
+    % Mostrar mensaje de error si no hay comunicación activa
+    errordlg('Error: No se ha conectado al puerto serial.', 'Error de Conexión');
+end

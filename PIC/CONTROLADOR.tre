@@ -1,0 +1,26 @@
+ÀÄ0 - Repositorio Lab
+   ÃÄMAIN  0/312  Ram=2
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÃÄ@cinit2  (Inline)  Ram=0
+   ³  ÃÄ@const748  0/218  Ram=0
+   ³  ÃÄparsear_trama  0/48  Ram=3
+   ³  ÀÄ@const748  0/218  Ram=0
+   ÃÄEXT_isr  0/8  Ram=0
+   ÃÄTIMER0_isr  0/532  Ram=12
+   ³  ÃÄ@ITOF  0/54  Ram=2
+   ³  ÃÄ@MULFF  0/242  Ram=11
+   ³  ÃÄ@ITOF  0/54  Ram=2
+   ³  ÃÄ@DIVFF  0/348  Ram=14
+   ³  ÃÄ@FLT  0/120  Ram=10
+   ³  ÃÄ@ADDFF  0/618  Ram=16
+   ³  ÃÄ@MULFF  0/242  Ram=11
+   ³  ÃÄ@ADDFF  0/618  Ram=16
+   ³  ÃÄ@MULFF  0/242  Ram=11
+   ³  ÃÄ@ADDFF  0/618  Ram=16
+   ³  ÃÄ@MULFF  0/242  Ram=11
+   ³  ÀÄ@PRINTF_L32D_9600_31766_31767FPFPF  0/386  Ram=13
+   ³     ÃÄ@MULFF  0/242  Ram=11
+   ³     ÃÄ@FTOSD  0/64  Ram=5
+   ³     ÃÄ@DIV3232  0/142  Ram=13
+   ³     ÀÄ@DIV3232  0/142  Ram=13
+   ÀÄRDA_isr  0/52  Ram=3
