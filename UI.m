@@ -1,5 +1,3 @@
-%% Antes de modificar
-
 function varargout = UI(varargin)
 % UI MATLAB code for UI.fig
 %      UI, by itself, creates a new UI or raises the existing
@@ -46,7 +44,6 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before UI is made visible.
 function UI_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
@@ -61,6 +58,12 @@ handles.datos = [];
 handles.tiempo = [];
 handles.magnitudes = [];
 handles.tiemposTranscurridos = [];
+handles.setpoints = [];
+handles.tiemposSetpoints = [];
+handles.graficar = false; % Variable para controlar el inicio de la gráfica
+handles.tiempoInicio = []; % Inicializar tiempoInicio
+handles.setpointValue = 0; % Inicializar el valor del setpoint
+handles.motorState = 0; % Inicializar el estado del motor (0: detenido, 1: iniciado)
 
 % Set the CloseRequestFcn
 set(handles.figure1, 'CloseRequestFcn', {@UI_CloseRequestFcn, handles});
@@ -114,11 +117,21 @@ function button_start_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.label_rpm, 'String', 'Motor encendido');
 if isfield(handles, 's') && isvalid(handles.s)
-    fwrite(handles.s, 101, 'uint8'); % Enviar 101 en binario
+    handles.motorState = 1; % Iniciar el motor
+    trama = [255, handles.setpointValue, handles.motorState]; % Crear la trama de datos
+    disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
+    fwrite(handles.s, trama, 'uint8'); % Enviar la trama de datos
     disp('Comando de inicio enviado.');
     set(handles.button_stop, 'BackgroundColor', [0.5, 1, 0.5]);
     set(handles.button_start, 'BackgroundColor', [0.94, 0.94, 0.94]);
+    
+    % Iniciar la gráfica
+    handles.graficar = true;
+    handles.tiempoInicio = now; % Almacenar el tiempo de inicio
 end
+
+% Guardar los cambios en handles
+guidata(hObject, handles);
 
 % --- Executes on button press in boton_detener.
 function button_stop_Callback(hObject, eventdata, handles)
@@ -126,11 +139,17 @@ function button_stop_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if isfield(handles, 's') && isvalid(handles.s)
-    fwrite(handles.s, 102, 'uint8'); % Enviar 102 en binario
+    handles.motorState = 0; % Detener el motor
+    trama = [255, handles.setpointValue, handles.motorState]; % Crear la trama de datos
+    disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
+    fwrite(handles.s, trama, 'uint8'); % Enviar la trama de datos
     disp('Comando de parada enviado.');
     set(handles.button_start, 'BackgroundColor', [0.5, 1, 0.5]);
     set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
 end
+
+% Guardar los cambios en handles
+guidata(hObject, handles);
 
 % --- Executes on button press in boton_conectar.
 function button_connet_Callback(hObject, eventdata, handles)
@@ -316,15 +335,18 @@ if ~isempty(indicesRecientes)
 end
 
 % Actualizar la grafica en el axes con el tag grafica_1
-axes(handles.graph_1);
-plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes);
-xlabel(handles.graph_1, 'Tiempo (s)');
-ylabel(handles.graph_1, 'RPM');
-title(handles.graph_1, 'Grafica de RPM vs Tiempo');
+if handles.graficar
+    axes(handles.graph_1);
+    plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
+         handles.tiemposSetpoints, handles.setpoints, 'r--');
+    xlabel(handles.graph_1, 'Tiempo (s)');
+    ylabel(handles.graph_1, 'RPM');
+    title(handles.graph_1, 'Grafica de RPM vs Tiempo');
+    legend(handles.graph_1, 'Datos', 'Setpoint');
+end
 set(handles.label_rpm, 'String', [num2str(dato), ' RPM']);
 % Guardar los cambios en handles
 guidata(hObject, handles);
-
 
 function input_setpoint_Callback(hObject, eventdata, handles)
 % hObject    handle to entrada_setpoint (see GCBO)
@@ -347,15 +369,14 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes on button press in boton_enviar.
 function button_send_Callback(hObject, eventdata, handles)
 % hObject    handle to boton_enviar (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Obtener el valor del edit_text con el tag entrada_setpoint
-setpointStr = get(handles.entrada_setpoint, 'String');
+% Obtener el valor del edit_text con el tag input_setpoint
+setpointStr = get(handles.input_setpoint, 'String');
 
 % Verificar si el edit_text tiene contenido
 if ~isempty(setpointStr)
@@ -364,29 +385,45 @@ if ~isempty(setpointStr)
     
     % Verificar si la conversion fue exitosa y si esta en el rango 0-100
     if ~isnan(setpointValue) && setpointValue >= 0 && setpointValue <= 100 && mod(setpointValue, 1) == 0
-        % Convertir el valor a binario
-        setpointBinario = uint8(setpointValue);
+        handles.setpointValue = setpointValue; % Actualizar el valor del setpoint
         
-        % Enviar el valor binario por el puerto serial
-        fwrite(handles.s, setpointBinario, 'uint8');
+        % Crear la trama de datos
+        trama = [255, handles.setpointValue, handles.motorState];
+        
+        % Mostrar mensaje de depuración
+        disp(['Enviando trama: ', num2str(trama)]);
+        
+        % Enviar la trama de datos por el puerto serial
+        fwrite(handles.s, trama, 'uint8');
         
         % Obtener el tiempo actual
         tiempoActual = now;
         
-        % Si es el primer dato, almacenar el tiempo inicial
-        if isempty(handles.tiemposTranscurridos)
+        % Verificar si tiempoInicio está inicializado
+        if isempty(handles.tiempoInicio)
             handles.tiempoInicio = tiempoActual;
         end
         
         % Calcular el tiempo en segundos desde el primer dato
         tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir dias a segundos
         
-        % Almacenar los valores de magnitud y tiempo transcurrido
-        handles.magnitudes = [handles.magnitudes, setpointValue];
-        handles.tiemposTranscurridos = [handles.tiemposTranscurridos, tiempoTranscurrido];
+        % Almacenar los valores de setpoint y tiempo transcurrido
+        handles.setpoints = [handles.setpoints, setpointValue];
+        handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
         
         % Mostrar mensaje de confirmacion
         disp(['Valor enviado: ', num2str(setpointValue)]);
+        
+        % Actualizar la grafica en el axes con el tag grafica_1
+        if handles.graficar
+            axes(handles.graph_1);
+            plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
+                 handles.tiemposSetpoints, handles.setpoints, 'r--');
+            xlabel(handles.graph_1, 'Tiempo (s)');
+            ylabel(handles.graph_1, 'RPM');
+            title(handles.graph_1, 'Grafica de RPM vs Tiempo');
+            legend(handles.graph_1, 'Datos', 'Setpoint');
+        end
     else
         % Mostrar mensaje de error si la conversion fallo o el valor no esta en el rango
         disp('Error: El valor ingresado no es un numero entero valido entre 0 y 100.');
