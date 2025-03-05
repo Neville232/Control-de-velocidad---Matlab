@@ -22,7 +22,7 @@ function varargout = UI(varargin)
     
     % Edit the above text to modify the response to help UI
     
-    % Last Modified by GUIDE v2.5 03-Mar-2025 17:31:10
+    % Last Modified by GUIDE v2.5 04-Mar-2025 21:07:12
     
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -344,20 +344,19 @@ function varargout = UI(varargin)
             end
             
             if ~isnan(constanteTiempo)
-                a = 1/constanteTiempo; % El tiempo en el que la magnitud alcanza el 63% del valor final
-                K = valorFinalPromedio  * a;
+                t = constanteTiempo; % El tiempo en el que la magnitud alcanza el 63% del valor final
+                K = valorFinalPromedio;
                 disp(['K: ', num2str(K)]);
-                disp(['a: ', num2str(a)]);
-                disp(['t: ', num2str(constanteTiempo)]);
-                disp(['T establecimiento: ', num2str(4*constanteTiempo)])
+                disp(['t: ', num2str(t)]);
+                disp(['T establecimiento: ', num2str(4*t)])
                 disp(['ymax: ', num2str(valorFinalPromedio)]);
                 disp(['y63: ', num2str(valor63)]);
     
                 set(handles.label_k, 'String', num2str(K, '%.2f'));
-                set(handles.label_a, 'String', ['s + ', num2str(a, '%.2f')]);
+                set(handles.label_thau, 'String', [num2str(t, '%.2f'), 's + 1']);
     
                 num = [K];
-                den = [1 a];
+                den = [t 1];
                 sys = tf(num, den);
                 step(sys);
                 obj = stepinfo(sys);
