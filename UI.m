@@ -110,7 +110,7 @@ function varargout = UI(varargin)
     % Get default command line output from handles structure
     varargout{1} = handles.output;
     
-    % --- Executes on button press in boton_iniciar.
+        % --- Executes on button press in boton_iniciar.
     function button_start_Callback(hObject, eventdata, handles)
     % hObject    handle to boton_iniciar (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
@@ -132,6 +132,9 @@ function varargout = UI(varargin)
         handles.magnitudes = []; % Reiniciar magnitudes
         handles.setpoints = []; % Reiniciar setpoints
         handles.tiemposSetpoints = []; % Reiniciar tiempos de setpoints
+        
+        % Almacenar el tiempo de inicio del motor
+        handles.tiempoInicioMotor = now;
         
         % Iniciar un temporizador para actualizar la gráfica del setpoint cada 0.256 segundos
         handles.timer = timer('ExecutionMode', 'fixedRate', 'Period', 0.256, ...
@@ -283,6 +286,14 @@ function varargout = UI(varargin)
     % Si es el primer dato, almacenar el tiempo inicial
     if isempty(handles.tiemposTranscurridos)
         handles.tiempoInicio = tiempoActual;
+        
+        % Calcular el retardo del sistema
+        retardo = (tiempoActual - handles.tiempoInicioMotor) * 24 * 3600; % Convertir días a segundos
+        handles.L = retardo;
+        disp(['Retardo del sistema: ', num2str(retardo), ' s']);
+        
+        % Actualizar el static text con el tag label_L
+        set(handles.label_L, 'String', [num2str(retardo, '%.2f'), ' s']);
     end
     
     % Calcular el tiempo en segundos desde el primer dato
