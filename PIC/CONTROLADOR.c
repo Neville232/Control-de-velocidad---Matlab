@@ -39,7 +39,7 @@ void EXT_isr(){
 
 #INT_TIMER0                         //Interrupcion del Timer0 (calculo de rpm)
 void TIMER0_isr(){
-    set_timer0(6);                  // Precarga ajustada para 64 ms por interrupciÃ³n
+    set_timer0(6);                  // Precarga ajustada para 64 ms por interrupción
     count++;                        // Incrementar el contador
 
     if (count >= 4) {               // 256 ms
@@ -49,7 +49,6 @@ void TIMER0_isr(){
         int_encoder = 0;            // Reinicia contador del encoder
 
         if (rpm_anterior != 0) {    // Aplicar el filtro exponencial
-
             rpm = (beta + 1) * (alpha * rpm_actual + ((1 - alpha) * rpm_anterior));
         } else {
             rpm = rpm_actual;
@@ -57,7 +56,9 @@ void TIMER0_isr(){
 
         rpm_anterior = rpm;         // Actualiza rpm_anterior
 
-        printf("%.2f -", rpm);      // Imprimir valores en el puerto serial
+        if (estado == 1) {          // Solo enviar RPM si el motor está encendido
+            printf("%.2f -", rpm);  // Imprimir valores en el puerto serial
+        }
     }
 }
 
@@ -70,7 +71,7 @@ void RDA_isr() {
     }
     buffer[i] = c;
     i++;
-    if (i >= 3) {                  // Longitud de la trama de datos
+    if (i >= 3) {                   // Longitud de la trama de datos
         datos_listos = 1;
         i = 0;                      // Reiniciar el i­ndice del buffer
     }
