@@ -313,50 +313,81 @@ function varargout = UI(varargin)
             valorFinalPromedio = mean(magnitudesRecientes);
             disp(['Valor final promedio: ', num2str(valorFinalPromedio)]);
             valor63 = 0.63 * valorFinalPromedio;
+            valor283 = 0.283 * valorFinalPromedio;
             
             % Encontrar el tiempo en el que la magnitud alcanza el 63% del valor final
             indice63 = find(handles.magnitudes == valor63, 1);
+            indice283 = find(handles.magnitudes == valor283, 1);
             
             if ~isempty(indice63)
-                constanteTiempo = handles.tiemposTranscurridos(indice63);
-                disp(['Tiempo en el que la magnitud alcanza el 63%: ', num2str(constanteTiempo)]);
+                constanteTiempo63 = handles.tiemposTranscurridos(indice63);
+                disp(['Tiempo en el que la magnitud alcanza el 63%: ', num2str(constanteTiempo63)]);
                 disp(['Magnitud en el 63%: ', num2str(handles.magnitudes(indice63))]);
                 disp('Sin interpolar');
             else
                 % Si no se encuentra el valor, realizar interpolacion lineal
-                indiceInferior = find(handles.magnitudes < valor63, 1, 'last');
-                indiceSuperior = find(handles.magnitudes > valor63, 1, 'first');
+                indiceInferior63 = find(handles.magnitudes < valor63, 1, 'last');
+                indiceSuperior63 = find(handles.magnitudes > valor63, 1, 'first');
                 
-                if ~isempty(indiceInferior) && ~isempty(indiceSuperior)
+                if ~isempty(indiceInferior63) && ~isempty(indiceSuperior63)
                     % Interpolacion lineal
-                    x1 = handles.tiemposTranscurridos(indiceInferior);
-                    y1 = handles.magnitudes(indiceInferior);
-                    x2 = handles.tiemposTranscurridos(indiceSuperior);
-                    y2 = handles.magnitudes(indiceSuperior);
-                    constanteTiempo = x1 + (valor63 - y1) * (x2 - x1) / (y2 - y1);
+                    x1 = handles.tiemposTranscurridos(indiceInferior63);
+                    y1 = handles.magnitudes(indiceInferior63);
+                    x2 = handles.tiemposTranscurridos(indiceSuperior63);
+                    y2 = handles.magnitudes(indiceSuperior63);
+                    constanteTiempo63 = x1 + (valor63 - y1) * (x2 - x1) / (y2 - y1);
                     disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
                     disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
                     disp(['Tiempo mas cercano superior: ', num2str(x2)]);
                     disp(['Magnitud mas cercana superior: ', num2str(y2)]);
                 else
-                    constanteTiempo = NaN; % Si no se puede interpolar, asignar NaN
+                    constanteTiempo63 = NaN; % Si no se puede interpolar, asignar NaN
                 end
             end
             
-            if ~isnan(constanteTiempo)
-                t = constanteTiempo; % El tiempo en el que la magnitud alcanza el 63% del valor final
+            if ~isempty(indice283)
+                constanteTiempo283 = handles.tiemposTranscurridos(indice283);
+                disp(['Tiempo en el que la magnitud alcanza el 28.3%: ', num2str(constanteTiempo283)]);
+                disp(['Magnitud en el 28.3%: ', num2str(handles.magnitudes(indice283))]);
+                disp('Sin interpolar');
+            else
+                % Si no se encuentra el valor, realizar interpolacion lineal
+                indiceInferior283 = find(handles.magnitudes < valor283, 1, 'last');
+                indiceSuperior283 = find(handles.magnitudes > valor283, 1, 'first');
+                
+                if ~isempty(indiceInferior283) && !isempty(indiceSuperior283)
+                    % Interpolacion lineal
+                    x1 = handles.tiemposTranscurridos(indiceInferior283);
+                    y1 = handles.magnitudes(indiceInferior283);
+                    x2 = handles.tiemposTranscurridos(indiceSuperior283);
+                    y2 = handles.magnitudes(indiceSuperior283);
+                    constanteTiempo283 = x1 + (valor283 - y1) * (x2 - x1) / (y2 - y1);
+                    disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
+                    disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
+                    disp(['Tiempo mas cercano superior: ', num2str(x2)]);
+                    disp(['Magnitud mas cercana superior: ', num2str(y2)]);
+                else
+                    constanteTiempo283 = NaN; % Si no se puede interpolar, asignar NaN
+                end
+            end
+            
+            if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
+                t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
+                t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
                 K = valorFinalPromedio;
                 disp(['K: ', num2str(K)]);
-                disp(['t: ', num2str(t)]);
-                disp(['T establecimiento: ', num2str(4*t)])
+                disp(['t63: ', num2str(t63)]);
+                disp(['t283: ', num2str(t283)]);
+                disp(['T establecimiento: ', num2str(4*t63)])
                 disp(['ymax: ', num2str(valorFinalPromedio)]);
                 disp(['y63: ', num2str(valor63)]);
+                disp(['y283: ', num2str(valor283)]);
     
                 set(handles.label_k, 'String', num2str(K, '%.2f'));
-                set(handles.label_thau, 'String', [num2str(t, '%.2f'), 's + 1']);
+                set(handles.label_thau, 'String', [num2str(t63, '%.2f'), 's + 1']);
     
                 num = [K];
-                den = [t 1];
+                den = [t63 1];
                 sys = tf(num, den);
                 step(sys);
                 obj = stepinfo(sys);
@@ -369,7 +400,7 @@ function varargout = UI(varargin)
                 set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
     
             else
-                disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% del valor final.');
+                disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
             end
         else
             % disp('La variacion de las muestras en los ultimos 3 segundos es mayor al 2%.');
