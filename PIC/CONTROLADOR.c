@@ -84,7 +84,7 @@ void parsear_trama(char *buffer) {
     if (buffer[0] == 0xFF) {        // Verificar el caracter de inicio
         duty = buffer[1];
         estado = buffer[2];
-        printf("Trama recibida: duty=%d, estado=%d\n", duty, estado); // Mensaje de depuración
+        // printf("Trama recibida: duty=%d, estado=%d\n", duty, estado); // Mensaje de depuración
     }
 }
 
@@ -109,10 +109,10 @@ void main(){
             
             if (estado) {
                 set_pwm1_duty(duty_porcentual[duty]);
-                printf("Motor encendido: duty=%d\n", duty);
+                //printf("Motor encendido: duty=%d\n", duty);
             } else {
                 set_pwm1_duty(0);
-                printf("Motor apagado\n");
+                //printf("Motor apagado\n");
             }
         }
         

@@ -1,67 +1,61 @@
 
-ROM used:   3640/32768 (11%)
-            3640/32768 (11%) including unused fragments
+ROM used:   3386/32768 (10%)
+            3386/32768 (10%) including unused fragments
 
-            3.3 Average locations per line
-            62.8 Average locations per statement
+            3.0 Average locations per line
+            61.6 Average locations per statement
 
-RAM used:   70/2048 (3%) at main() level
-            118/2048 (6%) worst case
+RAM used:   68/2048 (3%) at main() level
+            116/2048 (6%) worst case
 
 Stack used: 4 worst case (2 in main + 2 for interrupts)
 Stack size: 31
 
 Lines Stmts  %   Files
 ----- ----- ---  -----
-  124    58 100  CONTROLADOR.c
+  128    55 100  CONTROLADOR.c
   988     0   0  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\18F45K50.h
 ----- -----
- 1112    58 Total
+ 1116    55 Total
 
 Page ROM  %  RAM    Vol Diff  Functions:
 ---- --- --- ---    --- ----  ----------
-0     38   1    0             @const748
+0    218   3    0             @const748
 0      8   0    0     13  1.0  EXT_isr
 0    474   7   12    436  6.4  TIMER0_isr
 0     54   1    2             @ITOF
-0    242   3   11             @MULFF
+0    242   4   11             @MULFF
 0    348   5   14             @DIVFF
 0    120   2   10             @FLT
-0    618   8   16             @ADDFF
+0    618   9   16             @ADDFF
 0     52   1    3    197  4.0  RDA_isr
-0    104   1    3    157  3.8  parsear_trama
-0     36   0    0             @const779
-0     32   0    3             @PSTRINGCN_9600_31766_31767
-0     40   1    3    197  4.0  @DIV88
-0    178   2    6    157  3.8  @PRINTF_D_9600_31766_31767
-0    410   6    2    609  4.7  MAIN
-0     26   0    0             @const791
-0     16   0    0             @const792
-0     36   0    2    488  4.6  @PSTRINGC_9600_31766_31767
-0      8   0    0             @const797
-0     64   1    5             @FTOSD
-0    142   2   13             @DIV3232
-0    400   5   13             @PRINTF_L32D_9600_31766_31767FPFPF
+0     48   1    3    110  3.4  parsear_trama
+0    362   5    2    538  4.7  MAIN
+0      8   0    0             @const782
+0     64   1    5    197  4.0  @FTOSD
+0    142   2   13    157  3.8  @DIV3232
+0    400   6   13    609  4.7  @PRINTF_L32D_9600_31766_31767FPFPF
+0     34   1    3             @PSTRINGCN_9600_31766_31767
  Inline         0             @cinit1
 
 Program metrics:
     Functions               8
-    Statements              58
-    Comments                206
-    Volume (V)              3440
-    Difficulty (D)          30.9
-    Effort to implement (E) 106449
-    Time to implement (T)   1 hours, 39 minutes
+    Statements              55
+    Comments                211
+    Volume (V)              3418
+    Difficulty (D)          31.5
+    Effort to implement (E) 107719
+    Time to implement (T)   1 hours, 40 minutes
     Est Delivered Bugs (B)  1
-    Cyclomatic Complexity   15
-    Maintainability (MI)    157
+    Cyclomatic Complexity   17
+    Maintainability (MI)    158
 
  Segment     Used  Free
 -----------  ----  ----
 00000-00002     4  0  
 00004-00006     0  4  
 00008-000C4   190  0  
-000C6-07FFE  3446  29124  
+000C6-07FFE  3192  29378  
 
 
 

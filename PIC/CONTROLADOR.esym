@@ -1,7 +1,7 @@
 D G "__PCH__" 0 125 ""5.115""
 D G "__DEVICE__" 0 125 "4550"
 D G "__DATE__" 0 125 ""05-Mar-25""
-D G "__TIME__" 0 125 ""22:39:40""
+D G "__TIME__" 0 125 ""23:11:51""
 D G "_UNICODE" 0 125 ""?""
 D G "__EVAL" 0 125 ""?"" "Standard Header file for the PIC18F45K50 device ////////////////"
 c L "set_tris_a" 1 3 6 "FUNCTION"
@@ -1441,27 +1441,28 @@ V G "duty" 0 15 "int8" `745
 C L "jump_to_isr" 0 7 1 "FUNCTION"
 V G "estado" 0 16 "int8" `746 
 C L "jump_to_isr" 0 7 1 "FUNCTION"
-V G "duty_porcentual" 0 18 "[11]" `748 
-V G "rpm_actual" 0 22 "float" `750 
+V G "duty_porcentual" 0 18 "[101]" `748 
+C L "jump_to_isr" 0 7 3 "FUNCTION"
+V G "rpm_actual" 0 26 "float" `750 
 C L "jump_to_isr" 0 7 1 "FUNCTION"
-V G "rpm_anterior" 0 23 "float" `751 
+V G "rpm_anterior" 0 27 "float" `751 
 C L "jump_to_isr" 0 7 1 "FUNCTION"
-V G "rpm" 0 24 "float" `752 
+V G "rpm" 0 28 "float" `752 
 C L "jump_to_isr" 0 7 1 "FUNCTION"
-V G "alpha" 0 25 "float" `753 
+V G "alpha" 0 29 "float" `753 
 C L "jump_to_isr" 0 7 1 "FUNCTION"
-V G "beta" 0 26 "float" `754 
+V G "beta" 0 30 "float" `754 
 C L "jump_to_isr" 0 7 1 "FUNCTION"
-V G "buffer" 0 28 "int8[10]" `755  "Buffer para la trama"
-V G "i" 0 29 "int8" `756 
-V G "datos_listos" 0 30 "int8" `757 
-V G "rpm_listo" 0 31 "int8" `758 
+V G "buffer" 0 32 "int8[10]" `755  "Buffer para la trama"
+V G "i" 0 33 "int8" `756 
+V G "datos_listos" 0 34 "int8" `757 
+V G "rpm_listo" 0 35 "int8" `758 
 C L "jump_to_isr" 0 7 2 "FUNCTION"
-F N "EXT_isr" 0 36 ""
-F G "EXT_isr" 0 36 "void()" `759 
+F N "EXT_isr" 0 40 ""
+F G "EXT_isr" 0 40 "void()" `759 
 C L "EXT_isr" 0 7 1 "FUNCTION"
-F N "TIMER0_isr" 0 41 ""
-F G "TIMER0_isr" 0 41 "void(int16 )" `760 
+F N "TIMER0_isr" 0 45 ""
+F G "TIMER0_isr" 0 45 "void()" `760 
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
@@ -1471,21 +1472,23 @@ C L "TIMER0_isr" 0 7 1 "FUNCTION"
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
 C L "TIMER0_isr" 0 7 1 "FUNCTION"
-F N "RDA_isr" 0 65 ""
-F G "RDA_isr" 0 65 "void(sint32 ,int8 )" `775 
-V L "c" 0 66 "int8" `776 
+F N "RDA_isr" 0 69 ""
+F G "RDA_isr" 0 69 "void()" `775 
+V L "c" 0 70 "int8" `776 
 C L "RDA_isr" 0 7 1 "FUNCTION"
 C L "RDA_isr" 0 7 1 "FUNCTION"
 C L "RDA_isr" 0 7 1 "FUNCTION"
 C L "RDA_isr" 0 7 1 "FUNCTION"
 C L "parsear_trama" 0 7 1 "FUNCTION"
-F N "parsear_trama" 0 79 ""
-V L "buffer" 0 79 "*int8" `778 
-F G "parsear_trama" 0 79 "void(*int8 buffer,float )" `777 
+F N "parsear_trama" 0 83 ""
+V L "buffer" 0 83 "*int8" `778 
+F G "parsear_trama" 0 83 "void(*int8 buffer)" `777 
 C L "parsear_trama" 0 7 1 "FUNCTION"
 C L "parsear_trama" 0 7 1 "FUNCTION"
-F N "MAIN" 0 87 ""
-F G "MAIN" 0 87 "void(int8 )" `788  "Habilitar interrupciones"
+F N "MAIN" 0 91 ""
+F G "MAIN" 0 91 "void()" `779  "Habilitar interrupciones"
+C L "MAIN" 0 7 1 "FUNCTION"
+C L "MAIN" 0 7 1 "FUNCTION"
 C L "MAIN" 0 7 1 "FUNCTION"
 C L "MAIN" 0 7 1 "FUNCTION"
 C L "MAIN" 0 7 1 "FUNCTION"

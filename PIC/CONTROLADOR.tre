@@ -1,27 +1,16 @@
 ÀÄ0 - Repositorio Lab
-   ÃÄMAIN  0/410  Ram=2
+   ÃÄMAIN  0/362  Ram=2
    ³  ÃÄ@cinit1  (Inline)  Ram=0
    ³  ÃÄ@cinit2  (Inline)  Ram=0
-   ³  ÃÄ@const748  0/38  Ram=0
-   ³  ÃÄparsear_trama  0/104  Ram=3
-   ³  ³  ÃÄ@PSTRINGCN_9600_31766_31767  0/32  Ram=3
-   ³  ³  ÃÄ@PRINTF_D_9600_31766_31767  0/178  Ram=6
-   ³  ³  ³  ÃÄ@DIV88  0/40  Ram=3
-   ³  ³  ³  ÀÄ@DIV88  0/40  Ram=3
-   ³  ³  ÃÄ@PSTRINGCN_9600_31766_31767  0/32  Ram=3
-   ³  ³  ÀÄ@PRINTF_D_9600_31766_31767  0/178  Ram=6
-   ³  ³     ÀÄ*
-   ³  ÃÄ@const748  0/38  Ram=0
-   ³  ÃÄ@PSTRINGCN_9600_31766_31767  0/32  Ram=3
-   ³  ÃÄ@PRINTF_D_9600_31766_31767  0/178  Ram=6
-   ³  ³  ÀÄ*
-   ³  ÃÄ@PSTRINGC_9600_31766_31767  0/36  Ram=2
+   ³  ÃÄ@const748  0/218  Ram=0
+   ³  ÃÄparsear_trama  0/48  Ram=3
+   ³  ÃÄ@const748  0/218  Ram=0
    ³  ÃÄ@PRINTF_L32D_9600_31766_31767FPFPF  0/400  Ram=13
    ³  ³  ÃÄ@MULFF  0/242  Ram=11
    ³  ³  ÃÄ@FTOSD  0/64  Ram=5
    ³  ³  ÃÄ@DIV3232  0/142  Ram=13
    ³  ³  ÀÄ@DIV3232  0/142  Ram=13
-   ³  ÀÄ@PSTRINGCN_9600_31766_31767  0/32  Ram=3
+   ³  ÀÄ@PSTRINGCN_9600_31766_31767  0/34  Ram=3
    ÃÄEXT_isr  0/8  Ram=0
    ÃÄTIMER0_isr  0/474  Ram=12
    ³  ÃÄ@ITOF  0/54  Ram=2
