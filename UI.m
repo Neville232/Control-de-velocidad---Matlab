@@ -112,38 +112,39 @@ function varargout = UI(varargin)
     
         % --- Executes on button press in boton_iniciar.
     function button_start_Callback(hObject, eventdata, handles)
-    % hObject    handle to boton_iniciar (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    structure with handles and user data (see GUIDATA)
-    set(handles.label_rpm, 'String', 'Motor encendido');
-    if isfield(handles, 's') && isvalid(handles.s)
-        handles.motorState = 1; % Iniciar el motor
-        trama = [255, handles.setpointValue, handles.motorState]; % Crear la trama de datos
-        disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
-        fwrite(handles.s, trama, 'uint8'); % Enviar la trama de datos
-        disp('Comando de inicio enviado.');
-        set(handles.button_stop, 'BackgroundColor', [0.5, 1, 0.5]);
-        set(handles.button_start, 'BackgroundColor', [0.94, 0.94, 0.94]);
+        % hObject    handle to boton_iniciar (see GCBO)
+        % eventdata  reserved - to be defined in a future version of MATLAB
+        % handles    structure with handles and user data (see GUIDATA)
+        set(handles.label_rpm, 'String', 'Motor encendido');
+        if isfield(handles, 's') && isvalid(handles.s)
+            handles.motorState = 1; % Iniciar el motor
+            trama = [255, handles.setpointValue, handles.motorState]; % Crear la trama de datos
+            disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
+            fwrite(handles.s, trama, 'uint8'); % Enviar la trama de datos
+            disp('Comando de inicio enviado.');
+            set(handles.button_stop, 'BackgroundColor', [0.5, 1, 0.5]);
+            set(handles.button_start, 'BackgroundColor', [0.94, 0.94, 0.94]);
+            
+            % Reiniciar la gráfica
+            handles.graficar = true;
+            handles.tiempoInicio = now; % Almacenar el tiempo de inicio
+            handles.tiemposTranscurridos = []; % Reiniciar tiempos transcurridos
+            handles.magnitudes = []; % Reiniciar magnitudes
+            handles.setpoints = []; % Reiniciar setpoints
+            handles.tiemposSetpoints = []; % Reiniciar tiempos de setpoints
+            
+            % Almacenar el tiempo de inicio del motor
+            handles.tiempoInicioMotor = now;
+            
+            % Iniciar un temporizador para actualizar la gráfica del setpoint cada 0.256 segundos
+            handles.timer = timer('ExecutionMode', 'fixedRate', 'Period', 0.256, ...
+                                  'TimerFcn', {@updateSetpointGraph, hObject});
+            start(handles.timer);
+        end
         
-        % Reiniciar la gráfica
-        handles.graficar = true;
-        handles.tiempoInicio = now; % Almacenar el tiempo de inicio
-        handles.tiemposTranscurridos = []; % Reiniciar tiempos transcurridos
-        handles.magnitudes = []; % Reiniciar magnitudes
-        handles.setpoints = []; % Reiniciar setpoints
-        handles.tiemposSetpoints = []; % Reiniciar tiempos de setpoints
-        
-        % Almacenar el tiempo de inicio del motor
-        handles.tiempoInicioMotor = now;
-        
-        % Iniciar un temporizador para actualizar la gráfica del setpoint cada 0.256 segundos
-        handles.timer = timer('ExecutionMode', 'fixedRate', 'Period', 0.256, ...
-                              'TimerFcn', {@updateSetpointGraph, hObject});
-        start(handles.timer);
-    end
+        % Guardar los cambios en handles
+        guidata(hObject, handles);
     
-    % Guardar los cambios en handles
-    guidata(hObject, handles);
 
 
     function updateSetpointGraph(~, ~, hObject)
@@ -197,42 +198,39 @@ function varargout = UI(varargin)
 
     
     % --- Executes on button press in boton_conectar.
-    function button_connet_Callback(hObject, eventdata, handles)
-    % hObject    handle to boton_conectar (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    structure with handles and user data (see GUIDATA)
-    
-    % Verificar si ya esta conectado al puerto serial
-    if isfield(handles, 's') && isvalid(handles.s) && strcmp(handles.s.Status, 'open')
-        return;
-    end
-    
-    % Obtener el puerto serial seleccionado del popupmenu
-    puertosCOM = get(handles.menuCOM, 'String');
-    indiceSeleccionado = get(handles.menuCOM, 'Value');
-    puertoSerial = puertosCOM{indiceSeleccionado};
-    
-    % Configuracion del puerto serial
-    velocidadBaudios = 9600; % Configura la velocidad en baudios
-    
-    % Crear objeto serial
-    handles.s = serial(puertoSerial, 'BaudRate', velocidadBaudios, 'Terminator', '-'); % Usar '-' como terminador
-    
-    % Configurar la funcion de callback para leer datos cuando esten disponibles
-    handles.s.BytesAvailableFcnMode = 'terminator';
-    handles.s.BytesAvailableFcn = {@serialCallback, hObject};
-    
-    % Abrir el puerto serial
-    fopen(handles.s);
-    disp(['Puerto serial ', puertoSerial, ' conectado.']);
-    
-    %Cambia de color el boton de iniciar
-    set(handles.button_start, 'BackgroundColor', [0.5, 1, 0.5]);
-    set(handles.button_connet, 'BackgroundColor', [0.94, 0.94, 0.94]);
-    set(handles.button_disconnet, 'BackgroundColor', [1, 0.5, 0.5]);
-    
-    % Guardar los cambios en handles
-    guidata(hObject, handles);
+        function button_connet_Callback(hObject, eventdata, handles)
+        % Verificar si ya esta conectado al puerto serial
+        if isfield(handles, 's') && isvalid(handles.s) && strcmp(handles.s.Status, 'open')
+            return;
+        end
+        
+        % Obtener el puerto serial seleccionado del popupmenu
+        puertosCOM = get(handles.menuCOM, 'String');
+        indiceSeleccionado = get(handles.menuCOM, 'Value');
+        puertoSerial = puertosCOM{indiceSeleccionado};
+        
+        % Configuracion del puerto serial
+        velocidadBaudios = 9600; % Configura la velocidad en baudios
+        
+        % Crear objeto serial
+        handles.s = serial(puertoSerial, 'BaudRate', velocidadBaudios, 'Terminator', '-'); % Usar '-' como terminador
+        
+        % Configurar la funcion de callback para leer datos cuando esten disponibles
+        handles.s.BytesAvailableFcnMode = 'terminator';
+        handles.s.BytesAvailableFcn = {@serialCallback, hObject};
+        
+        % Abrir el puerto serial
+        fopen(handles.s);
+        disp(['Puerto serial ', puertoSerial, ' conectado.']);
+        
+        % Cambia de color el boton de iniciar
+        set(handles.button_start, 'BackgroundColor', [0.5, 1, 0.5]);
+        set(handles.button_connet, 'BackgroundColor', [0.94, 0.94, 0.94]);
+        set(handles.button_disconnet, 'BackgroundColor', [1, 0.5, 0.5]);
+        
+        % Guardar los cambios en handles
+        guidata(hObject, handles);
+
     
     % --- Executes on button press in boton_desconectar.
     function button_disconnet_Callback(hObject, eventdata, handles)
@@ -257,179 +255,184 @@ function varargout = UI(varargin)
     
 
     function serialCallback(obj, event, hObject)
-    % obj    handle to the serial object
-    % event  structure with event data
-    % hObject handle to the figure
-    
-    % Obtener handles actualizados
-    handles = guidata(hObject);
-    
-    % Leer los datos disponibles
-    dato = fscanf(obj);
-    
-    % Verificar si se recibieron datos
-    if isempty(dato)
-        disp('No se recibieron datos.');
-        return;
-    end
-    
-    % Eliminar el terminador '-' del dato recibido
-    dato = strrep(dato, '-', '');
-    
-    % Convertir el dato a numero
-    dato = str2double(dato);
-    disp(['Dato recibido: ', num2str(dato)]);
-    
-    % Obtener el tiempo actual
-    tiempoActual = now;
-    
-    % Si es el primer dato, almacenar el tiempo inicial
-    if isempty(handles.tiemposTranscurridos)
-        handles.tiempoInicio = tiempoActual;
+        % obj    handle to the serial object
+        % event  structure with event data
+        % hObject handle to the figure
         
-        % Calcular el retardo del sistema
-        retardo = (tiempoActual - handles.tiempoInicioMotor) * 24 * 3600; % Convertir días a segundos
-        handles.L = retardo;
-        disp(['Retardo del sistema: ', num2str(retardo), ' s']);
+        % Obtener handles actualizados
+        handles = guidata(hObject);
         
-        % Actualizar el static text con el tag label_L
-        set(handles.label_L, 'String', [num2str(retardo, '%.2f'), ' s']);
-    end
-    
-    % Calcular el tiempo en segundos desde el primer dato
-    tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir dias a segundos
-    
-    % Almacenar los valores de magnitud y tiempo transcurrido
-    handles.magnitudes = [handles.magnitudes, dato];
-    handles.tiemposTranscurridos = [handles.tiemposTranscurridos, tiempoTranscurrido];
-    
-    % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
-    intervalo = 2; % Intervalo de tiempo en segundos
-    umbralVariacion = 0.02; % Variacion maxima permitida (2%)
-    
-    % Encontrar las muestras dentro del intervalo de tiempo
-    indicesRecientes = find(handles.tiemposTranscurridos >= (tiempoTranscurrido - intervalo));
-    
-    if ~isempty(indicesRecientes)
-        magnitudesRecientes = handles.magnitudes(indicesRecientes);
-        magnitudMaxima = max(magnitudesRecientes);
-        magnitudMinima = min(magnitudesRecientes);
-        variacion = (magnitudMaxima - magnitudMinima) / magnitudMaxima;
-    
-        if variacion <= umbralVariacion
-            % disp('La variacion de las muestras en los ultimos 3 segundos es menor o igual al 2%.');
-            disp('Se ha alcanzado el establecimiento del sistema.');
-            fwrite(handles.s, 102, 'uint8'); % Enviar 102 en binario para detener el proceso
-            set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
-            valorFinalPromedio = mean(magnitudesRecientes);
-            disp(['Valor final promedio: ', num2str(valorFinalPromedio)]);
-            valor63 = 0.63 * valorFinalPromedio;
-            valor283 = 0.283 * valorFinalPromedio;
-            
-            % Encontrar el tiempo en el que la magnitud alcanza el 63% del valor final
-            indice63 = find(handles.magnitudes == valor63, 1);
-            indice283 = find(handles.magnitudes == valor283, 1);
-            
-            if ~isempty(indice63)
-                constanteTiempo63 = handles.tiemposTranscurridos(indice63);
-                disp(['Tiempo en el que la magnitud alcanza el 63%: ', num2str(constanteTiempo63)]);
-                disp(['Magnitud en el 63%: ', num2str(handles.magnitudes(indice63))]);
-                disp('Sin interpolar');
-            else
-                % Si no se encuentra el valor, realizar interpolacion lineal
-                indiceInferior63 = find(handles.magnitudes < valor63, 1, 'last');
-                indiceSuperior63 = find(handles.magnitudes > valor63, 1, 'first');
-                
-                if ~isempty(indiceInferior63) && ~isempty(indiceSuperior63)
-                    % Interpolacion lineal
-                    x1 = handles.tiemposTranscurridos(indiceInferior63);
-                    y1 = handles.magnitudes(indiceInferior63);
-                    x2 = handles.tiemposTranscurridos(indiceSuperior63);
-                    y2 = handles.magnitudes(indiceSuperior63);
-                    constanteTiempo63 = x1 + (valor63 - y1) * (x2 - x1) / (y2 - y1);
-                    disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
-                    disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
-                    disp(['Tiempo mas cercano superior: ', num2str(x2)]);
-                    disp(['Magnitud mas cercana superior: ', num2str(y2)]);
-                else
-                    constanteTiempo63 = NaN; % Si no se puede interpolar, asignar NaN
-                end
-            end
-            
-            if ~isempty(indice283)
-                constanteTiempo283 = handles.tiemposTranscurridos(indice283);
-                disp(['Tiempo en el que la magnitud alcanza el 28.3%: ', num2str(constanteTiempo283)]);
-                disp(['Magnitud en el 28.3%: ', num2str(handles.magnitudes(indice283))]);
-                disp('Sin interpolar');
-            else
-                % Si no se encuentra el valor, realizar interpolacion lineal
-                indiceInferior283 = find(handles.magnitudes < valor283, 1, 'last');
-                indiceSuperior283 = find(handles.magnitudes > valor283, 1, 'first');
-                
-                if ~isempty(indiceInferior283) && !isempty(indiceSuperior283)
-                    % Interpolacion lineal
-                    x1 = handles.tiemposTranscurridos(indiceInferior283);
-                    y1 = handles.magnitudes(indiceInferior283);
-                    x2 = handles.tiemposTranscurridos(indiceSuperior283);
-                    y2 = handles.magnitudes(indiceSuperior283);
-                    constanteTiempo283 = x1 + (valor283 - y1) * (x2 - x1) / (y2 - y1);
-                    disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
-                    disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
-                    disp(['Tiempo mas cercano superior: ', num2str(x2)]);
-                    disp(['Magnitud mas cercana superior: ', num2str(y2)]);
-                else
-                    constanteTiempo283 = NaN; % Si no se puede interpolar, asignar NaN
-                end
-            end
-            
-            if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
-                t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
-                t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
-                K = valorFinalPromedio;
-                disp(['K: ', num2str(K)]);
-                disp(['t63: ', num2str(t63)]);
-                disp(['t283: ', num2str(t283)]);
-                disp(['T establecimiento: ', num2str(4*t63)])
-                disp(['ymax: ', num2str(valorFinalPromedio)]);
-                disp(['y63: ', num2str(valor63)]);
-                disp(['y283: ', num2str(valor283)]);
-    
-                set(handles.label_k, 'String', num2str(K, '%.2f'));
-                set(handles.label_thau, 'String', [num2str(t63, '%.2f'), 's + 1']);
-    
-                num = [K];
-                den = [t63 1];
-                sys = tf(num, den);
-                step(sys);
-                obj = stepinfo(sys);
-                ts = obj.SettlingTime;
-                mp = obj.Overshoot*100;
-                disp(['Tiempo de establecimiento: ', num2str(ts)]);
-                disp(['Sobre impulso: ', num2str(mp)]);
-    
-                set(handles.label_settlingtime, 'String', ['Ts: ', num2str(ts, '%.2f'), ' s']);
-                set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
-    
-            else
-                disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
-            end
-        else
-            % disp('La variacion de las muestras en los ultimos 3 segundos es mayor al 2%.');
+        % Leer los datos disponibles
+        dato = fscanf(obj);
+        
+        % Verificar si se recibieron datos
+        if isempty(dato)
+            disp('No se recibieron datos.');
+            return;
         end
-    end
-    
-    % Actualizar la grafica en el axes con el tag grafica_1
-    if handles.graficar
-        axes(handles.graph_1);
-        plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
-             handles.tiemposSetpoints, handles.setpoints, 'r--');
-        xlabel(handles.graph_1, 'Tiempo (s)');
-        ylabel(handles.graph_1, 'RPM');
-        title(handles.graph_1, 'Grafica de RPM vs Tiempo');
-    end
-    set(handles.label_rpm, 'String', [num2str(dato), ' RPM']);
-    % Guardar los cambios en handles
-    guidata(hObject, handles);
+        
+        % Eliminar el terminador '-' del dato recibido
+        dato = strrep(dato, '-', '');
+        
+        % Convertir el dato a numero
+        dato = str2double(dato);
+        disp(['Dato recibido: ', num2str(dato)]);
+        
+        % Obtener el tiempo actual
+        tiempoActual = now;
+        
+        % Si es el primer dato, almacenar el tiempo inicial
+        if isempty(handles.tiemposTranscurridos)
+            handles.tiempoInicio = tiempoActual;
+            
+            % Calcular el retardo del sistema
+            if isfield(handles, 'tiempoInicioMotor')
+                retardo = (tiempoActual - handles.tiempoInicioMotor) * 24 * 3600; % Convertir días a segundos
+                handles.L = retardo;
+                disp(['Retardo del sistema: ', num2str(retardo), ' s']);
+                
+                % Actualizar el static text con el tag label_L
+                set(handles.label_L, 'String', [num2str(retardo, '%.2f'), ' s']);
+            else
+                disp('Error: tiempoInicioMotor no está definido.');
+            end
+        end
+        
+        % Calcular el tiempo en segundos desde el primer dato
+        tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir dias a segundos
+        
+        % Almacenar los valores de magnitud y tiempo transcurrido
+        handles.magnitudes = [handles.magnitudes, dato];
+        handles.tiemposTranscurridos = [handles.tiemposTranscurridos, tiempoTranscurrido];
+        
+        % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
+        intervalo = 2; % Intervalo de tiempo en segundos
+        umbralVariacion = 0.02; % Variacion maxima permitida (2%)
+        
+        % Encontrar las muestras dentro del intervalo de tiempo
+        indicesRecientes = find(handles.tiemposTranscurridos >= (tiempoTranscurrido - intervalo));
+        
+        if ~isempty(indicesRecientes)
+            magnitudesRecientes = handles.magnitudes(indicesRecientes);
+            magnitudMaxima = max(magnitudesRecientes);
+            magnitudMinima = min(magnitudesRecientes);
+            variacion = (magnitudMaxima - magnitudMinima) / magnitudMaxima;
+        
+            if variacion <= umbralVariacion
+                % disp('La variacion de las muestras en los ultimos 3 segundos es menor o igual al 2%.');
+                disp('Se ha alcanzado el establecimiento del sistema.');
+                fwrite(handles.s, 102, 'uint8'); % Enviar 102 en binario para detener el proceso
+                set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
+                valorFinalPromedio = mean(magnitudesRecientes);
+                disp(['Valor final promedio: ', num2str(valorFinalPromedio)]);
+                valor63 = 0.63 * valorFinalPromedio;
+                valor283 = 0.283 * valorFinalPromedio;
+                
+                % Encontrar el tiempo en el que la magnitud alcanza el 63% del valor final
+                indice63 = find(handles.magnitudes == valor63, 1);
+                indice283 = find(handles.magnitudes == valor283, 1);
+                
+                if ~isempty(indice63)
+                    constanteTiempo63 = handles.tiemposTranscurridos(indice63);
+                    disp(['Tiempo en el que la magnitud alcanza el 63%: ', num2str(constanteTiempo63)]);
+                    disp(['Magnitud en el 63%: ', num2str(handles.magnitudes(indice63))]);
+                    disp('Sin interpolar');
+                else
+                    % Si no se encuentra el valor, realizar interpolacion lineal
+                    indiceInferior63 = find(handles.magnitudes < valor63, 1, 'last');
+                    indiceSuperior63 = find(handles.magnitudes > valor63, 1, 'first');
+                    
+                    if ~isempty(indiceInferior63) && ~isempty(indiceSuperior63)
+                        % Interpolacion lineal
+                        x1 = handles.tiemposTranscurridos(indiceInferior63);
+                        y1 = handles.magnitudes(indiceInferior63);
+                        x2 = handles.tiemposTranscurridos(indiceSuperior63);
+                        y2 = handles.magnitudes(indiceSuperior63);
+                        constanteTiempo63 = x1 + (valor63 - y1) * (x2 - x1) / (y2 - y1);
+                        disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
+                        disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
+                        disp(['Tiempo mas cercano superior: ', num2str(x2)]);
+                        disp(['Magnitud mas cercana superior: ', num2str(y2)]);
+                    else
+                        constanteTiempo63 = NaN; % Si no se puede interpolar, asignar NaN
+                    end
+                end
+                
+                if ~isempty(indice283)
+                    constanteTiempo283 = handles.tiemposTranscurridos(indice283);
+                    disp(['Tiempo en el que la magnitud alcanza el 28.3%: ', num2str(constanteTiempo283)]);
+                    disp(['Magnitud en el 28.3%: ', num2str(handles.magnitudes(indice283))]);
+                    disp('Sin interpolar');
+                else
+                    % Si no se encuentra el valor, realizar interpolacion lineal
+                    indiceInferior283 = find(handles.magnitudes < valor283, 1, 'last');
+                    indiceSuperior283 = find(handles.magnitudes > valor283, 1, 'first');
+                    
+                    if ~isempty(indiceInferior283) && ~isempty(indiceSuperior283)
+                        % Interpolacion lineal
+                        x1 = handles.tiemposTranscurridos(indiceInferior283);
+                        y1 = handles.magnitudes(indiceInferior283);
+                        x2 = handles.tiemposTranscurridos(indiceSuperior283);
+                        y2 = handles.magnitudes(indiceSuperior283);
+                        constanteTiempo283 = x1 + (valor283 - y1) * (x2 - x1) / (y2 - y1);
+                        disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
+                        disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
+                        disp(['Tiempo mas cercano superior: ', num2str(x2)]);
+                        disp(['Magnitud mas cercana superior: ', num2str(y2)]);
+                    else
+                        constanteTiempo283 = NaN; % Si no se puede interpolar, asignar NaN
+                    end
+                end
+                
+                if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
+                    t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
+                    t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
+                    K = valorFinalPromedio;
+                    disp(['K: ', num2str(K)]);
+                    disp(['t63: ', num2str(t63)]);
+                    disp(['t283: ', num2str(t283)]);
+                    disp(['T establecimiento: ', num2str(4*t63)])
+                    disp(['ymax: ', num2str(valorFinalPromedio)]);
+                    disp(['y63: ', num2str(valor63)]);
+                    disp(['y283: ', num2str(valor283)]);
+        
+                    set(handles.label_k, 'String', num2str(K, '%.2f'));
+                    set(handles.label_thau, 'String', [num2str(t63, '%.2f'), 's + 1']);
+        
+                    num = [K];
+                    den = [t63 1];
+                    sys = tf(num, den);
+                    step(sys);
+                    obj = stepinfo(sys);
+                    ts = obj.SettlingTime;
+                    mp = obj.Overshoot*100;
+                    disp(['Tiempo de establecimiento: ', num2str(ts)]);
+                    disp(['Sobre impulso: ', num2str(mp)]);
+        
+                    set(handles.label_settlingtime, 'String', ['Ts: ', num2str(ts, '%.2f'), ' s']);
+                    set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
+        
+                else
+                    disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
+                end
+            else
+                % disp('La variacion de las muestras en los ultimos 3 segundos es mayor al 2%.');
+            end
+        end
+        
+        % Actualizar la grafica en el axes con el tag grafica_1
+        if handles.graficar
+            axes(handles.graph_1);
+            plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
+                 handles.tiemposSetpoints, handles.setpoints, 'r--');
+            xlabel(handles.graph_1, 'Tiempo (s)');
+            ylabel(handles.graph_1, 'RPM');
+            title(handles.graph_1, 'Grafica de RPM vs Tiempo');
+        end
+        set(handles.label_rpm, 'String', [num2str(dato), ' RPM']);
+        % Guardar los cambios en handles
+        guidata(hObject, handles);
+
     
     function input_setpoint_Callback(hObject, eventdata, handles)
     % hObject    handle to entrada_setpoint (see GCBO)
