@@ -24,7 +24,7 @@ float rpm = 0.0;                // Almacena el valor filtrado de RPM
 float alpha = 0.8;              // Coeficiente de filtro exponencial
 float beta = 0.0;               // Ajuste del error
 
-char buffer[50];
+char buffer[5];
 int i = 0;
 int datos_listos = 0;
 
