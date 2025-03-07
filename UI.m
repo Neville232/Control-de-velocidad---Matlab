@@ -557,7 +557,12 @@ function updateSetpointGraph(~, ~, hObject)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
     
-    
+    Kc = 0.9*thau/(K*L);
+    ti = 3.33*L;
+
+    % Actualizar los static text con los tag label_Kc y label_ti
+    set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
+    set(handles.label_ti, 'String', num2str(ti, '%.2f'));
 
 
 % --- Executes on button press in controlar.
