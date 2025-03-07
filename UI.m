@@ -22,7 +22,7 @@ function varargout = UI(varargin)
     
     % Edit the above text to modify the response to help UI
     
-    % Last Modified by GUIDE v2.5 04-Mar-2025 21:07:12
+    % Last Modified by GUIDE v2.5 06-Mar-2025 20:46:14
     
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -147,7 +147,7 @@ function varargout = UI(varargin)
     
 
 
-    function updateSetpointGraph(~, ~, hObject)
+function updateSetpointGraph(~, ~, hObject)
     % Obtener handles actualizados
     handles = guidata(hObject);
     
@@ -158,7 +158,7 @@ function varargout = UI(varargin)
     tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir días a segundos
     
     % Almacenar los valores de setpoint y tiempo transcurrido
-    handles.setpoints = [handles.setpoints, handles.setpointValue];
+    handles.setpoints = [handles.setpoints, handles.setpointValue * 12 + 162]; % Convertir porcentaje a RPM
     handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
     
     % Actualizar la gráfica en el axes con el tag grafica_1
@@ -171,7 +171,7 @@ function varargout = UI(varargin)
     
     % Guardar los cambios en handles
     guidata(hObject, handles);
-    
+        
     % --- Executes on button press in boton_detener.
     function button_stop_Callback(hObject, eventdata, handles)
     % hObject    handle to boton_detener (see GCBO)
@@ -457,69 +457,72 @@ function varargout = UI(varargin)
     
     % --- Executes on button press in boton_enviar.
     function button_send_Callback(hObject, eventdata, handles)
-    % hObject    handle to boton_enviar (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    structure with handles and user data (see GUIDATA)
-    
-    % Obtener el valor del edit_text con el tag input_setpoint
-    setpointStr = get(handles.input_setpoint, 'String');
-    
-    % Verificar si el edit_text tiene contenido
-    if ~isempty(setpointStr)
-        % Convertir el valor a numero
-        setpointValue = str2double(setpointStr);
+        % hObject    handle to boton_enviar (see GCBO)
+        % eventdata  reserved - to be defined in a future version of MATLAB
+        % handles    structure with handles and user data (see GUIDATA)
         
-        % Verificar si la conversion fue exitosa y si esta en el rango 0-100
-        if ~isnan(setpointValue) && setpointValue >= 0 && setpointValue <= 100 && mod(setpointValue, 1) == 0
-            handles.setpointValue = setpointValue; % Actualizar el valor del setpoint
+        % Obtener el valor del edit_text con el tag input_setpoint
+        setpointStr = get(handles.input_setpoint, 'String');
+        
+        % Verificar si el edit_text tiene contenido
+        if ~isempty(setpointStr)
+            % Convertir el valor a numero
+            setpointValue = str2double(setpointStr);
             
-            % Crear la trama de datos
-            trama = [255, handles.setpointValue, handles.motorState];
-            
-            % Mostrar mensaje de depuración
-            disp(['Enviando trama: ', num2str(trama)]);
-            
-            % Enviar la trama de datos por el puerto serial
-            fwrite(handles.s, trama, 'uint8');
-            
-            % Obtener el tiempo actual
-            tiempoActual = now;
-            
-            % Verificar si tiempoInicio está inicializado
-            if isempty(handles.tiempoInicio)
-                handles.tiempoInicio = tiempoActual;
-            end
-            
-            % Calcular el tiempo en segundos desde el primer dato
-            tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir dias a segundos
-            
-            % Almacenar los valores de setpoint y tiempo transcurrido
-            handles.setpoints = [handles.setpoints, setpointValue];
-            handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
-            
-            % Mostrar mensaje de confirmacion
-            disp(['Valor enviado: ', num2str(setpointValue)]);
-            
-            % Actualizar la grafica en el axes con el tag grafica_1
-            if handles.graficar
-                axes(handles.graph_1);
-                plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
-                     handles.tiemposSetpoints, handles.setpoints, 'r--');
-                xlabel(handles.graph_1, 'Tiempo (s)');
-                ylabel(handles.graph_1, 'RPM');
-                title(handles.graph_1, 'Grafica de RPM vs Tiempo');
+            % Verificar si la conversion fue exitosa y si esta en el rango 680-1360
+            if ~isnan(setpointValue) && setpointValue >= 680 && setpointValue <= 1360 && mod(setpointValue, 1) == 0
+                % Convertir el valor de RPM a porcentaje entero
+                porcentaje = round((setpointValue - 162) / 12);
+                handles.setpointValue = porcentaje; % Actualizar el valor del setpoint
+                
+                % Crear la trama de datos
+                trama = [255, handles.setpointValue, handles.motorState];
+                
+                % Mostrar mensaje de depuración
+                disp(['Enviando trama: ', num2str(trama)]);
+                
+                % Enviar la trama de datos por el puerto serial
+                fwrite(handles.s, trama, 'uint8');
+                
+                % Obtener el tiempo actual
+                tiempoActual = now;
+                
+                % Verificar si tiempoInicio está inicializado
+                if isempty(handles.tiempoInicio)
+                    handles.tiempoInicio = tiempoActual;
+                end
+                
+                % Calcular el tiempo en segundos desde el primer dato
+                tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir dias a segundos
+                
+                % Almacenar los valores de setpoint y tiempo transcurrido
+                handles.setpoints = [handles.setpoints, setpointValue];
+                handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
+                
+                % Mostrar mensaje de confirmacion
+                disp(['Valor enviado: ', num2str(setpointValue)]);
+                
+                % Actualizar la grafica en el axes con el tag grafica_1
+                if handles.graficar
+                    axes(handles.graph_1);
+                    plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
+                         handles.tiemposSetpoints, handles.setpoints, 'r--');
+                    xlabel(handles.graph_1, 'Tiempo (s)');
+                    ylabel(handles.graph_1, 'RPM');
+                    title(handles.graph_1, 'Grafica de RPM vs Tiempo');
+                end
+            else
+                % Mostrar mensaje de error si la conversion fallo o el valor no esta en el rango
+                disp('Error: El valor ingresado no es un numero entero valido entre 680 y 1360.');
             end
         else
-            % Mostrar mensaje de error si la conversion fallo o el valor no esta en el rango
-            disp('Error: El valor ingresado no es un numero entero valido entre 0 y 100.');
+            % Mostrar mensaje de error si el edit_text esta vacio
+            disp('Error: No se ingreso ningun valor.');
         end
-    else
-        % Mostrar mensaje de error si el edit_text esta vacio
-        disp('Error: No se ingreso ningun valor.');
-    end
-    
-    % Guardar los cambios en handles
-    guidata(hObject, handles);
+        
+        % Guardar los cambios en handles
+        guidata(hObject, handles);
+
     
     function actualizarMenuCOM(handles)
     % Obtener la lista de puertos COM disponibles
@@ -563,23 +566,10 @@ function varargout = UI(varargin)
     % handles    structure with handles and user data (see GUIDATA)
     
     
-    % --- Executes on button press in monitorear.
-    function monitorear_Callback(hObject, eventdata, handles)
-    % hObject    handle to monitorear (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    structure with handles and user data (see GUIDATA)
-    
-    % Verificar si el objeto serial existe y está conectado
-    if isfield(handles, 's') && isvalid(handles.s) && strcmp(handles.s.Status, 'open')
-        % Guardar el objeto serial en la base de datos de la aplicación
-        setappdata(0, 'SerialObject', handles.s);
-    
-        % Cerrar la figura actual
-        delete(handles.figure1);
-    
-        % Abrir la nueva figura UImonitoreo
-        UImonitoreo;
-    else
-        % Mostrar mensaje de error si no hay comunicación activa
-        errordlg('Error: No se ha conectado al puerto serial.', 'Error de Conexión');
-    end
+
+
+% --- Executes on button press in controlar.
+function controlar_Callback(hObject, eventdata, handles)
+% hObject    handle to controlar (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
