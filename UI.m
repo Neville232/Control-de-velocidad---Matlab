@@ -275,8 +275,20 @@ function updateSetpointGraph(~, ~, hObject)
         dato = strrep(dato, '-', '');
         
         % Convertir el dato a numero
-        dato = str2double(dato);
-        disp(['Dato recibido: ', num2str(dato)]);
+        rpm_actual = str2double(dato);
+        disp(['Dato recibido: ', num2str(rpm_actual)]);
+        
+        % Parámetros del filtro
+        alpha = 0.5; % Ajusta este valor según sea necesario
+        beta = 1; % Ajusta este valor según sea necesario
+        
+        % Aplicar el filtro de media de movimiento
+        if isfield(handles, 'rpm_anterior') && handles.rpm_anterior ~= 0
+            rpm = (beta + 1) * (alpha * rpm_actual + ((1 - alpha) * handles.rpm_anterior));
+        else
+            rpm = rpm_actual;
+        end
+        handles.rpm_anterior = rpm; % Actualiza rpm_anterior
         
         % Obtener el tiempo actual
         tiempoActual = now;
@@ -290,7 +302,7 @@ function updateSetpointGraph(~, ~, hObject)
         tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir dias a segundos
         
         % Almacenar los valores de magnitud y tiempo transcurrido
-        handles.magnitudes = [handles.magnitudes, dato];
+        handles.magnitudes = [handles.magnitudes, rpm];
         handles.tiemposTranscurridos = [handles.tiemposTranscurridos, tiempoTranscurrido];
         
         % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
@@ -307,7 +319,6 @@ function updateSetpointGraph(~, ~, hObject)
             variacion = (magnitudMaxima - magnitudMinima) / magnitudMaxima;
         
             if variacion <= umbralVariacion
-                % disp('La variacion de las muestras en los ultimos 3 segundos es menor o igual al 2%.');
                 disp('Se ha alcanzado el establecimiento del sistema.');
                 fwrite(handles.s, 102, 'uint8'); % Enviar 102 en binario para detener el proceso
                 set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
@@ -390,7 +401,7 @@ function updateSetpointGraph(~, ~, hObject)
                     set(handles.label_thau, 'String', [num2str(thau, '%.2f'), ' s']);
                     
                     set(handles.label_k, 'String', num2str(K, '%.2f'));
-                    set(handles.label_L, 'String', ['-', num2str(L, '%.2f'), ' s']);
+                    set(handles.label_L, 'String', [num2str(L, '%.2f'), ' s']);
             
                     num = [K];
                     den = [thau 1];
@@ -398,12 +409,23 @@ function updateSetpointGraph(~, ~, hObject)
                     step(sys);
                     obj = stepinfo(sys);
                     ts = obj.SettlingTime;
-                    mp = obj.Overshoot*100;
+                    mp = obj.Overshoot * 100;
                     disp(['Tiempo de establecimiento: ', num2str(ts)]);
                     disp(['Sobre impulso: ', num2str(mp)]);
             
                     set(handles.label_settlingtime, 'String', ['Ts: ', num2str(ts, '%.2f'), ' s']);
                     set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
+                    
+                    % Detener el motor y la gráfica
+                    handles.motorState = 0;
+                    handles.graficar = false;
+                    if isfield(handles, 'timer') && isvalid(handles.timer)
+                        stop(handles.timer);
+                        delete(handles.timer);
+                    end
+                    trama = [255, handles.setpointValue, handles.motorState];
+                    fwrite(handles.s, trama, 'uint8');
+                    disp('Motor detenido y gráfica detenida.');
             
                 else
                     disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
@@ -422,7 +444,7 @@ function updateSetpointGraph(~, ~, hObject)
             ylabel(handles.graph_1, 'RPM');
             title(handles.graph_1, 'Grafica de RPM vs Tiempo');
         end
-        set(handles.label_rpm, 'String', [num2str(dato), ' RPM']);
+        set(handles.label_rpm, 'String', [num2str(rpm), ' RPM']);
         % Guardar los cambios en handles
         guidata(hObject, handles);
     
@@ -553,20 +575,118 @@ function updateSetpointGraph(~, ~, hObject)
     
     % --- Executes on button press in calcular_controlador.
     function calcular_controlador_Callback(hObject, eventdata, handles)
-    % hObject    handle to calcular_controlador (see GCBO)
+        % hObject    handle to calcular_controlador (see GCBO)
+        % eventdata  reserved - to be defined in a future version of MATLAB
+        % handles    structure with handles and user data (see GUIDATA)
+        
+        % Asegurarse de que los valores de thau, K y L estén disponibles
+        if isfield(handles, 'thau') && isfield(handles, 'K') && isfield(handles, 'L')
+            thau = handles.thau;
+            K = handles.K;
+            L = handles.L;
+            
+            % Calcular los parámetros del controlador
+            Kc = 0.9 * thau / (K * L);
+            ti = 3.33 * L;
+    
+            % Actualizar los static text con los tag label_Kc y label_ti
+            set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
+            set(handles.label_ti, 'String', num2str(ti, '%.2f'));
+        else
+            disp('Error: Los valores de thau, K y L no están disponibles.');
+        end
+        
+        % Guardar los cambios en handles
+        guidata(hObject, handles);
+
+
+function controlar_Callback(hObject, eventdata, handles)
+    % hObject    handle to controlar (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
     
-    Kc = 0.9*thau/(K*L);
-    ti = 3.33*L;
-
-    % Actualizar los static text con los tag label_Kc y label_ti
-    set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
-    set(handles.label_ti, 'String', num2str(ti, '%.2f'));
-
-
-% --- Executes on button press in controlar.
-function controlar_Callback(hObject, eventdata, handles)
-% hObject    handle to controlar (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+    % Asegurarse de que los valores de thau, K y L estén disponibles
+    if isfield(handles, 'thau') && isfield(handles, 'K') && isfield(handles, 'L')
+        thau = handles.thau;
+        K = handles.K;
+        L = handles.L;
+        
+        % Parámetros del controlador
+        muestreo = 0.256; 
+        Kc = 0.9 * thau / (K * L);
+        ti = 3.33 * L;
+        q0 = Kc * (1 + (muestreo / (2 * ti)));
+        q1 = -Kc * (1 - (muestreo / (2 * ti)));
+        
+        % Inicializar errores
+        e = [0, 0]; % e[0] es el error actual, e[1] es el error anterior
+        
+        % Inicializar salida del controlador
+        u = 0;
+        
+        % Obtener el setpoint actual en RPM
+        setpoint = handles.setpointValue * 12 + 162;
+        
+        % Obtener la magnitud actual
+        if ~isempty(handles.magnitudes)
+            magnitudActual = handles.magnitudes(end);
+        else
+            magnitudActual = 0;
+        end
+        
+        % Calcular el error actual
+        e(1) = setpoint - magnitudActual;
+        
+        % Calcular la salida del controlador
+        u = q0 * e(1) + q1 * e(2);
+        
+        % Actualizar el array de errores
+        e(2) = e(1);
+        
+        % Mostrar la salida del controlador
+        disp(['Salida del controlador: ', num2str(u)]);
+        
+        % Convertir la salida del controlador a RPM
+        nuevoSetpoint = round(u);
+        
+        % Asegurarse de que el nuevo setpoint esté dentro del rango permitido
+        if nuevoSetpoint < 680
+            nuevoSetpoint = 680;
+        elseif nuevoSetpoint > 1360
+            nuevoSetpoint = 1360;
+        end
+        
+        % Actualizar el valor del setpoint en handles
+        handles.setpointValue = nuevoSetpoint;
+        
+        % Crear la trama de datos
+        trama = [255, handles.setpointValue, handles.motorState];
+        
+        % Enviar la trama de datos por el puerto serial
+        fwrite(handles.s, trama, 'uint8');
+        disp(['Enviando trama: ', num2str(trama)]);
+        
+        % Reiniciar la gráfica
+        handles.graficar = true;
+        handles.tiempoInicio = now; % Almacenar el tiempo de inicio
+        handles.tiemposTranscurridos = []; % Reiniciar tiempos transcurridos
+        handles.magnitudes = []; % Reiniciar magnitudes
+        handles.setpoints = []; % Reiniciar setpoints
+        handles.tiemposSetpoints = []; % Reiniciar tiempos de setpoints
+        
+        % Iniciar el motor
+        handles.motorState = 1;
+        trama = [255, handles.setpointValue, handles.motorState];
+        fwrite(handles.s, trama, 'uint8');
+        disp('Motor iniciado por el controlador.');
+        
+        % Iniciar un temporizador para actualizar la gráfica del setpoint cada 0.256 segundos
+        handles.timer = timer('ExecutionMode', 'fixedRate', 'Period', 0.256, ...
+                              'TimerFcn', {@updateSetpointGraph, hObject});
+        start(handles.timer);
+        
+        % Guardar los cambios en handles
+        guidata(hObject, handles);
+    else
+        disp('Error: Los valores de thau, K y L no están disponibles.');
+    end
