@@ -284,18 +284,6 @@ function updateSetpointGraph(~, ~, hObject)
         % Si es el primer dato, almacenar el tiempo inicial
         if isempty(handles.tiemposTranscurridos)
             handles.tiempoInicio = tiempoActual;
-            
-            % Calcular el retardo del sistema
-            if isfield(handles, 'tiempoInicioMotor')
-                retardo = (tiempoActual - handles.tiempoInicioMotor) * 24 * 3600; % Convertir días a segundos
-                handles.L = retardo;
-                disp(['Retardo del sistema: ', num2str(retardo), ' s']);
-                
-                % Actualizar el static text con el tag label_L
-                set(handles.label_L, 'String', [num2str(retardo, '%.2f'), ' s']);
-            else
-                disp('Error: tiempoInicioMotor no está definido.');
-            end
         end
         
         % Calcular el tiempo en segundos desde el primer dato
@@ -391,27 +379,32 @@ function updateSetpointGraph(~, ~, hObject)
                     disp(['K: ', num2str(K)]);
                     disp(['t63: ', num2str(t63)]);
                     disp(['t283: ', num2str(t283)]);
-                    disp(['T establecimiento: ', num2str(4*t63)])
-                    disp(['ymax: ', num2str(valorFinalPromedio)]);
-                    disp(['y63: ', num2str(valor63)]);
-                    disp(['y283: ', num2str(valor283)]);
-        
+                    
+                    % Calcular thau y L
+                    thau = 1.5 * (t63 * t283);
+                    L = t63 - thau;
+                    disp(['thau: ', num2str(thau)]);
+                    disp(['L: ', num2str(L)]);
+                    
+                    % Actualizar el static text con el tag label_thau
+                    set(handles.label_thau, 'String', [num2str(thau, '%.2f'), ' s']);
+                    
                     set(handles.label_k, 'String', num2str(K, '%.2f'));
-                    set(handles.label_thau, 'String', [num2str(t63, '%.2f'), 's + 1']);
-        
+                    set(handles.label_L, 'String', ['-', num2str(L, '%.2f'), ' s']);
+            
                     num = [K];
-                    den = [t63 1];
-                    sys = tf(num, den);
+                    den = [thau 1];
+                    sys = tf(num, den, 'InputDelay', L); % Incluir el retardo L en la función de transferencia
                     step(sys);
                     obj = stepinfo(sys);
                     ts = obj.SettlingTime;
                     mp = obj.Overshoot*100;
                     disp(['Tiempo de establecimiento: ', num2str(ts)]);
                     disp(['Sobre impulso: ', num2str(mp)]);
-        
+            
                     set(handles.label_settlingtime, 'String', ['Ts: ', num2str(ts, '%.2f'), ' s']);
                     set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
-        
+            
                 else
                     disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
                 end
@@ -432,7 +425,6 @@ function updateSetpointGraph(~, ~, hObject)
         set(handles.label_rpm, 'String', [num2str(dato), ' RPM']);
         % Guardar los cambios en handles
         guidata(hObject, handles);
-
     
     function input_setpoint_Callback(hObject, eventdata, handles)
     % hObject    handle to entrada_setpoint (see GCBO)
