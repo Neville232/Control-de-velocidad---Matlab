@@ -22,7 +22,7 @@ function varargout = UI(varargin)
     
     % Edit the above text to modify the response to help UI
     
-    % Last Modified by GUIDE v2.5 06-Mar-2025 20:46:14
+    % Last Modified by GUIDE v2.5 28-Feb-2025 00:20:00
     
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -279,8 +279,8 @@ function updateSetpointGraph(~, ~, hObject)
         disp(['Dato recibido: ', num2str(rpm_actual)]);
         
         % Parámetros del filtro
-        alpha = 0.5; % Ajusta este valor según sea necesario
-        beta = 1; % Ajusta este valor según sea necesario
+        alpha = 0.6; % Ajusta este valor según sea necesario
+        beta = 0; % Ajusta este valor según sea necesario beta es 0 
         
         % Aplicar el filtro de media de movimiento
         if isfield(handles, 'rpm_anterior') && handles.rpm_anterior ~= 0
@@ -306,7 +306,7 @@ function updateSetpointGraph(~, ~, hObject)
         handles.tiemposTranscurridos = [handles.tiemposTranscurridos, tiempoTranscurrido];
         
         % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
-        intervalo = 2; % Intervalo de tiempo en segundos
+        intervalo = 10; % Intervalo de tiempo en segundos
         umbralVariacion = 0.02; % Variacion maxima permitida (2%)
         
         % Encontrar las muestras dentro del intervalo de tiempo
@@ -392,16 +392,21 @@ function updateSetpointGraph(~, ~, hObject)
                     disp(['t283: ', num2str(t283)]);
                     
                     % Calcular thau y L
-                    thau = 1.5 * (t63 * t283);
+                    thau = 1.5 * (t63 - t283);
                     L = t63 - thau;
+                    
+                    handles.K = K;
+                    handles.thau = thau;
+                    handles.L = L;
+                    
                     disp(['thau: ', num2str(thau)]);
                     disp(['L: ', num2str(L)]);
                     
                     % Actualizar el static text con el tag label_thau
-                    set(handles.label_thau, 'String', [num2str(thau, '%.2f'), ' s']);
+                    set(handles.label_thau, 'String', [num2str(thau, '%.2f'), ' + s']);
                     
                     set(handles.label_k, 'String', num2str(K, '%.2f'));
-                    set(handles.label_L, 'String', [num2str(L, '%.2f'), ' s']);
+                    set(handles.label_L, 'String', ['-', num2str(L, '%.2f'), 's']);
             
                     num = [K];
                     den = [thau 1];
@@ -588,7 +593,12 @@ function updateSetpointGraph(~, ~, hObject)
             % Calcular los parámetros del controlador
             Kc = 0.9 * thau / (K * L);
             ti = 3.33 * L;
-    
+            
+            disp(['thau: ', num2str(thau, '%.2f')])
+            disp(['K: ', num2str(K, '%.2f')])
+            disp(['L: ', num2str(L, '%.2f')])
+            disp(['Kc: ', num2str(Kc, '%.2f')])
+            
             % Actualizar los static text con los tag label_Kc y label_ti
             set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
             set(handles.label_ti, 'String', num2str(ti, '%.2f'));
