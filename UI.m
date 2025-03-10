@@ -158,7 +158,7 @@ function updateSetpointGraph(~, ~, hObject)
     tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir días a segundos
     
     % Almacenar los valores de setpoint y tiempo transcurrido
-    handles.setpoints = [handles.setpoints, handles.setpointValue * 12 + 162]; % Convertir porcentaje a RPM
+    handles.setpoints = [handles.setpoints, handles.setpointValue * 14]; % Convertir porcentaje a RPM
     handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
     
     % Actualizar la gráfica en el axes con el tag grafica_1
@@ -305,6 +305,10 @@ function serialCallback(obj, event, hObject)
     handles.magnitudes = [handles.magnitudes, rpm];
     handles.tiemposTranscurridos = [handles.tiemposTranscurridos, tiempoTranscurrido];
     
+
+%% =============================================================================================================    
+%  Si se va a identificar el sistema.
+
     % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
     intervalo = 10; % Intervalo de tiempo en segundos
     umbralVariacion = 0.02; % Variacion maxima permitida (2%)
@@ -334,18 +338,21 @@ function serialCallback(obj, event, hObject)
             fwrite(handles.s, trama, 'uint8');
             disp('Motor detenido y gráfica detenida.');
             
-            % Interpolación lineal para encontrar el tiempo en el que la magnitud alcanza el 63% del valor final
-            constanteTiempo63 = interp1(handles.magnitudes, handles.tiemposTranscurridos, valor63, 'linear', 'extrap');
+            x = handles.tiemposTranscurridos;
+            y = handles.magnitudes;
+            constanteTiempo63 = csapi(y, x, valor63);
             disp(['Tiempo interpolado para 63%: ', num2str(constanteTiempo63)]);
             
-            % Interpolación lineal para encontrar el tiempo en el que la magnitud alcanza el 28.3% del valor final
-            constanteTiempo283 = interp1(handles.magnitudes, handles.tiemposTranscurridos, valor283, 'linear', 'extrap');
+            % Si no se encuentra el valor, realizar interpolacion con csapi
+            x = handles.tiemposTranscurridos;
+            y = handles.magnitudes;
+            constanteTiempo283 = csapi(y, x, valor283);
             disp(['Tiempo interpolado para 28.3%: ', num2str(constanteTiempo283)]);
             
             if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
                 t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
                 t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
-                K = valorFinalPromedio;
+                K = valorFinalPromedio/handles.setpointRPM; % Usar el setpoint almacenado en RPM como K
                 disp(['K: ', num2str(K)]);
                 disp(['t63: ', num2str(t63)]);
                 disp(['t283: ', num2str(t283)]);
@@ -366,7 +373,7 @@ function serialCallback(obj, event, hObject)
                 
                 set(handles.label_k, 'String', num2str(K, '%.2f'));
                 set(handles.label_L, 'String', ['-', num2str(L, '%.2f'), 's']);
-        
+            
                 num = [K];
                 den = [thau 1];
                 sys = tf(num, den, 'InputDelay', L); % Incluir el retardo L en la función de transferencia
@@ -376,7 +383,7 @@ function serialCallback(obj, event, hObject)
                 mp = obj.Overshoot * 100;
                 disp(['Tiempo de establecimiento: ', num2str(ts)]);
                 disp(['Sobre impulso: ', num2str(mp)]);
-        
+            
                 set(handles.label_settlingtime, 'String', ['Ts: ', num2str(ts, '%.2f'), ' s']);
                 set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
                 
@@ -384,7 +391,7 @@ function serialCallback(obj, event, hObject)
                     stop(handles.timer);
                     delete(handles.timer);
                 end
-        
+            
             else
                 disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
             end
@@ -441,14 +448,17 @@ function serialCallback(obj, event, hObject)
             % Convertir el valor a numero
             setpointValue = str2double(setpointStr);
             
-            % Verificar si la conversion fue exitosa y si esta en el rango 680-1360
-            if ~isnan(setpointValue) && setpointValue >= 680 && setpointValue <= 1360 && mod(setpointValue, 1) == 0
+            % Verificar si la conversion fue exitosa y si esta en el rango 700-1400
+            if ~isnan(setpointValue) && setpointValue >= 700 && setpointValue <= 1400 && mod(setpointValue, 1) == 0
                 % Convertir el valor de RPM a porcentaje entero
-                porcentaje = round((setpointValue - 162) / 12);
-                handles.setpointValue = porcentaje; % Actualizar el valor del setpoint
+                porcentaje = round(setpointValue / 14);
+                handles.setpointPorcentaje = porcentaje; % Actualizar el valor del setpoint
+                
+                % Almacenar el setpoint en RPM para el cálculo de K
+                handles.setpointRPM = setpointValue;
                 
                 % Crear la trama de datos
-                trama = [255, handles.setpointValue, handles.motorState];
+                trama = [255, handles.setpointPorcentaje, handles.motorState];
                 
                 % Mostrar mensaje de depuración
                 disp(['Enviando trama: ', num2str(trama)]);
@@ -465,16 +475,16 @@ function serialCallback(obj, event, hObject)
                 end
                 
                 % Calcular el tiempo en segundos desde el primer dato
-                tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir dias a segundos
+                tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir días a segundos
                 
                 % Almacenar los valores de setpoint y tiempo transcurrido
                 handles.setpoints = [handles.setpoints, setpointValue];
                 handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
                 
-                % Mostrar mensaje de confirmacion
+                % Mostrar mensaje de confirmación
                 disp(['Valor enviado: ', num2str(setpointValue)]);
                 
-                % Actualizar la grafica en el axes con el tag grafica_1
+                % Actualizar la gráfica en el axes con el tag grafica_1
                 if handles.graficar
                     axes(handles.graph_1);
                     plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
@@ -484,17 +494,16 @@ function serialCallback(obj, event, hObject)
                     title(handles.graph_1, 'Grafica de RPM vs Tiempo');
                 end
             else
-                % Mostrar mensaje de error si la conversion fallo o el valor no esta en el rango
-                disp('Error: El valor ingresado no es un numero entero valido entre 680 y 1360.');
+                % Mostrar mensaje de error si la conversión falló o el valor no está en el rango
+                disp('Error: El valor ingresado no es un número entero válido entre 700 y 1400.');
             end
         else
-            % Mostrar mensaje de error si el edit_text esta vacio
-            disp('Error: No se ingreso ningun valor.');
+            % Mostrar mensaje de error si el edit_text está vacío
+            disp('Error: No se ingresó ningún valor.');
         end
         
         % Guardar los cambios en handles
         guidata(hObject, handles);
-
     
     function actualizarMenuCOM(handles)
     % Obtener la lista de puertos COM disponibles
