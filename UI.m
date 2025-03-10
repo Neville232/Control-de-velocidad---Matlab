@@ -64,6 +64,7 @@ function varargout = UI(varargin)
     handles.tiempoInicio = []; % Inicializar tiempoInicio
     handles.setpointValue = 0; % Inicializar el valor del setpoint
     handles.motorState = 0; % Inicializar el estado del motor (0: detenido, 1: iniciado)
+    ylim(handles.graph_1, [0 1500]);
     
     % Set the CloseRequestFcn
     set(handles.figure1, 'CloseRequestFcn', {@UI_CloseRequestFcn, handles});
@@ -158,8 +159,13 @@ function updateSetpointGraph(~, ~, hObject)
     tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir días a segundos
     
     % Almacenar los valores de setpoint y tiempo transcurrido
-    handles.setpoints = [handles.setpoints, handles.setpointValue * 14]; % Convertir porcentaje a RPM
-    handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
+    if isempty(handles.setpoints)
+        handles.setpoints = [0, handles.setpointRPM]; % Iniciar desde 0 si no había un setpoint anterior
+        handles.tiemposSetpoints = [0, tiempoTranscurrido];
+    else
+        handles.setpoints = [handles.setpoints, handles.setpointRPM]; % Usar el setpoint en RPM
+        handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
+    end
     
     % Actualizar la gráfica en el axes con el tag grafica_1
     axes(handles.graph_1);
@@ -169,8 +175,11 @@ function updateSetpointGraph(~, ~, hObject)
     ylabel(handles.graph_1, 'RPM');
     title(handles.graph_1, 'Grafica de RPM vs Tiempo');
     
+    
     % Guardar los cambios en handles
     guidata(hObject, handles);
+
+
         
     % --- Executes on button press in boton_detener.
     function button_stop_Callback(hObject, eventdata, handles)
@@ -435,7 +444,7 @@ function serialCallback(obj, event, hObject)
     end
     
     % --- Executes on button press in boton_enviar.
-    function button_send_Callback(hObject, eventdata, handles)
+        function button_send_Callback(hObject, eventdata, handles)
         % hObject    handle to boton_enviar (see GCBO)
         % eventdata  reserved - to be defined in a future version of MATLAB
         % handles    structure with handles and user data (see GUIDATA)
@@ -478,8 +487,13 @@ function serialCallback(obj, event, hObject)
                 tiempoTranscurrido = (tiempoActual - handles.tiempoInicio) * 24 * 3600; % Convertir días a segundos
                 
                 % Almacenar los valores de setpoint y tiempo transcurrido
-                handles.setpoints = [handles.setpoints, setpointValue];
-                handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
+                if isempty(handles.setpoints)
+                    handles.setpoints = [0, setpointValue];
+                    handles.tiemposSetpoints = [0, tiempoTranscurrido];
+                else
+                    handles.setpoints = [handles.setpoints, setpointValue];
+                    handles.tiemposSetpoints = [handles.tiemposSetpoints, tiempoTranscurrido];
+                end
                 
                 % Mostrar mensaje de confirmación
                 disp(['Valor enviado: ', num2str(setpointValue)]);
@@ -504,6 +518,7 @@ function serialCallback(obj, event, hObject)
         
         % Guardar los cambios en handles
         guidata(hObject, handles);
+
     
     function actualizarMenuCOM(handles)
     % Obtener la lista de puertos COM disponibles
