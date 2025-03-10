@@ -254,7 +254,7 @@ function updateSetpointGraph(~, ~, hObject)
     guidata(hObject, handles);
     
 
-    function serialCallback(obj, event, hObject)
+        function serialCallback(obj, event, hObject)
         % obj    handle to the serial object
         % event  structure with event data
         % hObject handle to the figure
@@ -327,61 +327,17 @@ function updateSetpointGraph(~, ~, hObject)
                 valor63 = 0.63 * valorFinalPromedio;
                 valor283 = 0.283 * valorFinalPromedio;
                 
-                % Encontrar el tiempo en el que la magnitud alcanza el 63% del valor final
-                indice63 = find(handles.magnitudes == valor63, 1);
-                indice283 = find(handles.magnitudes == valor283, 1);
+                % Si no se encuentra el valor, realizar interpolacion con csapi
+                x = handles.tiemposTranscurridos;
+                y = handles.magnitudes;
+                constanteTiempo63 = csapi(y, x, valor63);
+                disp(['Tiempo interpolado para 63%: ', num2str(constanteTiempo63)]);
                 
-                if ~isempty(indice63)
-                    constanteTiempo63 = handles.tiemposTranscurridos(indice63);
-                    disp(['Tiempo en el que la magnitud alcanza el 63%: ', num2str(constanteTiempo63)]);
-                    disp(['Magnitud en el 63%: ', num2str(handles.magnitudes(indice63))]);
-                    disp('Sin interpolar');
-                else
-                    % Si no se encuentra el valor, realizar interpolacion lineal
-                    indiceInferior63 = find(handles.magnitudes < valor63, 1, 'last');
-                    indiceSuperior63 = find(handles.magnitudes > valor63, 1, 'first');
-                    
-                    if ~isempty(indiceInferior63) && ~isempty(indiceSuperior63)
-                        % Interpolacion lineal
-                        x1 = handles.tiemposTranscurridos(indiceInferior63);
-                        y1 = handles.magnitudes(indiceInferior63);
-                        x2 = handles.tiemposTranscurridos(indiceSuperior63);
-                        y2 = handles.magnitudes(indiceSuperior63);
-                        constanteTiempo63 = x1 + (valor63 - y1) * (x2 - x1) / (y2 - y1);
-                        disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
-                        disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
-                        disp(['Tiempo mas cercano superior: ', num2str(x2)]);
-                        disp(['Magnitud mas cercana superior: ', num2str(y2)]);
-                    else
-                        constanteTiempo63 = NaN; % Si no se puede interpolar, asignar NaN
-                    end
-                end
-                
-                if ~isempty(indice283)
-                    constanteTiempo283 = handles.tiemposTranscurridos(indice283);
-                    disp(['Tiempo en el que la magnitud alcanza el 28.3%: ', num2str(constanteTiempo283)]);
-                    disp(['Magnitud en el 28.3%: ', num2str(handles.magnitudes(indice283))]);
-                    disp('Sin interpolar');
-                else
-                    % Si no se encuentra el valor, realizar interpolacion lineal
-                    indiceInferior283 = find(handles.magnitudes < valor283, 1, 'last');
-                    indiceSuperior283 = find(handles.magnitudes > valor283, 1, 'first');
-                    
-                    if ~isempty(indiceInferior283) && ~isempty(indiceSuperior283)
-                        % Interpolacion lineal
-                        x1 = handles.tiemposTranscurridos(indiceInferior283);
-                        y1 = handles.magnitudes(indiceInferior283);
-                        x2 = handles.tiemposTranscurridos(indiceSuperior283);
-                        y2 = handles.magnitudes(indiceSuperior283);
-                        constanteTiempo283 = x1 + (valor283 - y1) * (x2 - x1) / (y2 - y1);
-                        disp(['Tiempo mas cercano inferior: ', num2str(x1)]);
-                        disp(['Magnitud mas cercana inferior: ', num2str(y1)]);
-                        disp(['Tiempo mas cercano superior: ', num2str(x2)]);
-                        disp(['Magnitud mas cercana superior: ', num2str(y2)]);
-                    else
-                        constanteTiempo283 = NaN; % Si no se puede interpolar, asignar NaN
-                    end
-                end
+                % Si no se encuentra el valor, realizar interpolacion con csapi
+                x = handles.tiemposTranscurridos;
+                y = handles.magnitudes;
+                constanteTiempo283 = csapi(y, x, valor283);
+                disp(['Tiempo interpolado para 28.3%: ', num2str(constanteTiempo283)]);
                 
                 if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
                     t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
