@@ -64,6 +64,7 @@ function varargout = UI(varargin)
     handles.tiempoInicio = []; % Inicializar tiempoInicio
     handles.setpointValue = 0; % Inicializar el valor del setpoint
     handles.motorState = 0; % Inicializar el estado del motor (0: detenido, 1: iniciado)
+    handles.estado = 1;
     ylim(handles.graph_1, [0 1500]);
     
     % Set the CloseRequestFcn
@@ -566,16 +567,31 @@ function serialCallback(obj, event, hObject)
             thau = handles.thau;
             K = handles.K;
             L = handles.L;
-            
+            muestreo = 0.256;
+            %setpoint = handles.setpointPorcentaje / 100;
+            %magnitud = handles.magnitudPorcentaje / 100;
+            %delta_K = setpoint - magnitud;
+
             % Calcular los parámetros del controlador
-            Kc = 0.9 * thau / (K * L);
-            ti = 3.33 * L;
-            
+            handles.Kc = 0.9 * thau / (K * L);
+            %handles.Kc = (delta_K * thau) / (K * L);
+            handles.ti = 3.33 * L;
+            Kc = handles.Kc;
+            ti = handles.ti;
+
+            handles.q0 = Kc * (1 + (muestreo / (2 * ti)));
+            handles.q1 = -Kc * (1 - (muestreo / (2 * ti)));
+            q0 = handles.q0;
+            q1 = handles.q1;
+
+
             disp(['thau: ', num2str(thau, '%.2f')])
             disp(['K: ', num2str(K, '%.2f')])
             disp(['L: ', num2str(L, '%.2f')])
             disp(['Kc: ', num2str(Kc, '%.2f')])
-            
+            disp(['q0: ', num2str(q0, '%.2f')])
+            disp(['q1: ', num2str(q1, '%.2f')])
+
             % Actualizar los static text con los tag label_Kc y label_ti
             set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
             set(handles.label_ti, 'String', num2str(ti, '%.2f'));
@@ -594,86 +610,41 @@ function controlar_Callback(hObject, eventdata, handles)
     
     % Asegurarse de que los valores de thau, K y L estén disponibles
     if isfield(handles, 'thau') && isfield(handles, 'K') && isfield(handles, 'L')
-        thau = handles.thau;
-        K = handles.K;
-        L = handles.L;
+        % Definir el tiempo de muestreo en segundos
+        tiempoMuestreo = 0.256; % Ajusta este valor según sea necesario
         
-        % Parámetros del controlador
-        muestreo = 0.256; 
-        Kc = 0.9 * thau / (K * L);
-        ti = 3.33 * L;
-        q0 = Kc * (1 + (muestreo / (2 * ti)));
-        q1 = -Kc * (1 - (muestreo / (2 * ti)));
+        u_anterior = 0;
+        error_anterior = handles.setpointRPM;
+
+        % Crear el temporizador
+        handles.timerControl = timer('ExecutionMode', 'fixedRate', 'Period', tiempoMuestreo, ...
+                                     'TimerFcn', {@ejecutarControl, hObject});
         
-        % Inicializar errores
-        e = [0, 0]; % e[0] es el error actual, e[1] es el error anterior
+        % Iniciar el temporizador
+        start(handles.timerControl);
         
-        % Inicializar salida del controlador
-        u = 0;
-        
-        % Obtener el setpoint actual en RPM
-        setpoint = handles.setpointValue * 12 + 162;
-        
-        % Obtener la magnitud actual
-        if ~isempty(handles.magnitudes)
-            magnitudActual = handles.magnitudes(end);
-        else
-            magnitudActual = 0;
-        end
-        
-        % Calcular el error actual
-        e(1) = setpoint - magnitudActual;
-        
-        % Calcular la salida del controlador
-        u = q0 * e(1) + q1 * e(2);
-        
-        % Actualizar el array de errores
-        e(2) = e(1);
-        
-        % Mostrar la salida del controlador
-        disp(['Salida del controlador: ', num2str(u)]);
-        
-        % Convertir la salida del controlador a RPM
-        nuevoSetpoint = round(u);
-        
-        % Asegurarse de que el nuevo setpoint esté dentro del rango permitido
-        if nuevoSetpoint < 680
-            nuevoSetpoint = 680;
-        elseif nuevoSetpoint > 1360
-            nuevoSetpoint = 1360;
-        end
-        
-        % Actualizar el valor del setpoint en handles
-        handles.setpointValue = nuevoSetpoint;
-        
-        % Crear la trama de datos
-        trama = [255, handles.setpointValue, handles.motorState];
-        
-        % Enviar la trama de datos por el puerto serial
-        fwrite(handles.s, trama, 'uint8');
-        disp(['Enviando trama: ', num2str(trama)]);
-        
-        % Reiniciar la gráfica
-        handles.graficar = true;
-        handles.tiempoInicio = now; % Almacenar el tiempo de inicio
-        handles.tiemposTranscurridos = []; % Reiniciar tiempos transcurridos
-        handles.magnitudes = []; % Reiniciar magnitudes
-        handles.setpoints = []; % Reiniciar setpoints
-        handles.tiemposSetpoints = []; % Reiniciar tiempos de setpoints
-        
-        % Iniciar el motor
-        handles.motorState = 1;
-        trama = [255, handles.setpointValue, handles.motorState];
-        fwrite(handles.s, trama, 'uint8');
-        disp('Motor iniciado por el controlador.');
-        
-        % Iniciar un temporizador para actualizar la gráfica del setpoint cada 0.256 segundos
-        handles.timer = timer('ExecutionMode', 'fixedRate', 'Period', 0.256, ...
-                              'TimerFcn', {@updateSetpointGraph, hObject});
-        start(handles.timer);
+        % Cambiar el color del botón para indicar que está activo
+        set(handles.controlar, 'BackgroundColor', [0.5, 1, 0.5]);
         
         % Guardar los cambios en handles
         guidata(hObject, handles);
     else
         disp('Error: Los valores de thau, K y L no están disponibles.');
     end
+        
+function ejecutarControl(~, ~, hObject)
+    % Obtener handles actualizados
+    
+
+
+    error_anterior = handles.error_actual;
+    u_anterior = handles.u_actual;
+
+    error_actual = handles.setpoint - handles.y_actual;
+    u_actual = u_anterior + (q0 * error_actual) + (q1 * error_anterior);
+    
+    handles.u_anterior = u_actual;
+    handles.error_anterior = error_actual;
+
+    % Guardar los cambios en handles
+    guidata(hObject, handles);

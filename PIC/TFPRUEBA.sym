@@ -132,12 +132,12 @@ Project Directory:
     C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\
 
 Project Files:
-    TFPRUEBA.c                                              [10-mar.-25 14:02  CRC=F8044B8B]
+    TFPRUEBA.c                                              [10-mar.-25 19:12  CRC=5D60C5D4]
     ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16f877a.h [07-mar.-23 19:19  CRC=32478F9C]
 
-Source signature=5C936AC3
+Source signature=C1EFE50C
 Program memory checksum=0000
-Hex file CRC=9DCE
+Hex file CRC=23FA
 
 Units:
     C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\TFPRUEBA (main)
