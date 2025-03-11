@@ -52,7 +52,7 @@ function varargout = UI(varargin)
     clc;
     % Choose default command line output for UI
     handles.output = hObject;
-    
+    global thau_global K_global L_global q0_global q1_global;
     % Inicializar variables para almacenar datos y tiempo
     handles.datos = [];
     handles.tiempo = [];
@@ -436,6 +436,7 @@ function serialCallback(obj, event, hObject)
         guidata(hObject, handles);
 
 function identificarSistema(handles, tiempoTranscurrido, rpm)
+    global thau_global K_global L_global;
     % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
     intervalo = 10; % Intervalo de tiempo en segundos
     umbralVariacion = 0.02; % Variacion maxima permitida (2%)
@@ -479,7 +480,7 @@ function identificarSistema(handles, tiempoTranscurrido, rpm)
             if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
                 t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
                 t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
-                K = valorFinalPromedio/handles.setpointRPM; % Usar el setpoint almacenado en RPM como K
+                K = valorFinalPromedio / handles.setpointRPM; % Usar el setpoint almacenado en RPM como K
                 disp(['K: ', num2str(K)]);
                 disp(['t63: ', num2str(t63)]);
                 disp(['t283: ', num2str(t283)]);
@@ -488,9 +489,10 @@ function identificarSistema(handles, tiempoTranscurrido, rpm)
                 thau = 1.5 * (t63 - t283);
                 L = t63 - thau;
                 
-                handles.K = K;
-                handles.thau = thau;
-                handles.L = L;
+                % Guardar los valores en las variables globales
+                thau_global = thau;
+                K_global = K;
+                L_global = L;
                 
                 disp(['thau: ', num2str(thau)]);
                 disp(['L: ', num2str(L)]);
@@ -521,6 +523,9 @@ function identificarSistema(handles, tiempoTranscurrido, rpm)
                 
                 % Cambiar el estado a 2 (control)
                 handles.estado = 2;
+                
+                % Guardar los cambios en handles
+                guidata(handles.figure1, handles);
             
             else
                 disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
@@ -529,6 +534,7 @@ function identificarSistema(handles, tiempoTranscurrido, rpm)
             % disp('La variacion de las muestras en los ultimos 3 segundos es mayor al 2%.');
         end
     end
+
 
 function controlarSistema(handles, tiempoTranscurrido, rpm)
     % Aquí puedes implementar la lógica para el control del sistema
@@ -581,59 +587,55 @@ function controlarSistema(handles, tiempoTranscurrido, rpm)
     
     
     % --- Executes on button press in calcular_controlador.
-    function calcular_controlador_Callback(hObject, eventdata, handles)
-        % hObject    handle to calcular_controlador (see GCBO)
-        % eventdata  reserved - to be defined in a future version of MATLAB
-        % handles    structure with handles and user data (see GUIDATA)
+        function calcular_controlador_Callback(hObject, eventdata, handles)
+            global thau_global K_global L_global q0_global q1_global;
+            
+            % Asegurarse de que los valores de thau, K y L estén disponibles
+            if ~isempty(thau_global) && ~isempty(K_global) && ~isempty(L_global)
+                thau = thau_global;
+                K = K_global;
+                L = L_global;
+                muestreo = 0.256;
         
-        % Asegurarse de que los valores de thau, K y L estén disponibles
-        if isfield(handles, 'thau') && isfield(handles, 'K') && isfield(handles, 'L')
-            thau = handles.thau;
-            K = handles.K;
-            L = handles.L;
-            muestreo = 0.256;
-            %setpoint = handles.setpointPorcentaje / 100;
-            %magnitud = handles.magnitudPorcentaje / 100;
-            %delta_K = setpoint - magnitud;
-
-            % Calcular los parámetros del controlador
-            handles.Kc = 0.9 * thau / (K * L);
-            %handles.Kc = (delta_K * thau) / (K * L);
-            handles.ti = 3.33 * L;
-            Kc = handles.Kc;
-            ti = handles.ti;
-
-            handles.q0 = Kc * (1 + (muestreo / (2 * ti)));
-            handles.q1 = -Kc * (1 - (muestreo / (2 * ti)));
-            q0 = handles.q0;
-            q1 = handles.q1;
-
-
-            disp(['thau: ', num2str(thau, '%.2f')])
-            disp(['K: ', num2str(K, '%.2f')])
-            disp(['L: ', num2str(L, '%.2f')])
-            disp(['Kc: ', num2str(Kc, '%.2f')])
-            disp(['q0: ', num2str(q0, '%.2f')])
-            disp(['q1: ', num2str(q1, '%.2f')])
-
-            % Actualizar los static text con los tag label_Kc y label_ti
-            set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
-            set(handles.label_ti, 'String', num2str(ti, '%.2f'));
-        else
-            disp('Error: Los valores de thau, K y L no están disponibles.');
-        end
+                % Calcular los parámetros del controlador
+                Kc = 0.9 * thau / (K * L);
+                ti = 3.33 * L;
         
-        % Guardar los cambios en handles
-        guidata(hObject, handles);
+                % Asegurarse de que ti es un escalar
+                if isscalar(ti)
+                    q0_global = Kc * (1 + (muestreo / (2 * ti)));
+                    q1_global = -Kc * (1 - (muestreo / (2 * ti)));
+                    q0 = q0_global;
+                    q1 = q1_global;
+        
+                    disp(['thau: ', num2str(thau, '%.2f')])
+                    disp(['K: ', num2str(K, '%.2f')])
+                    disp(['L: ', num2str(L, '%.2f')])
+                    disp(['Kc: ', num2str(Kc, '%.2f')])
+                    disp(['q0: ', num2str(q0, '%.2f')])
+                    disp(['q1: ', num2str(q1, '%.2f')])
+        
+                    % Actualizar los static text con los tag label_Kc y label_ti
+                    set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
+                    set(handles.label_ti, 'String', num2str(ti, '%.2f'));
+                else
+                    disp('Error: ti no es un escalar.');
+                end
+            else
+                disp('Error: Los valores de thau, K y L no están disponibles.');
+            end
+            
+            % Guardar los cambios en handles
+            guidata(hObject, handles);
+        
+
 
 
 function controlar_Callback(hObject, eventdata, handles)
-    % hObject    handle to controlar (see GCBO)
-    % eventdata  reserved - to be defined in a future version of MATLAB
-    % handles    structure with handles and user data (see GUIDATA)
+    global thau_global K_global L_global q0_global q1_global;
     
     % Asegurarse de que los valores de thau, K y L estén disponibles
-    if isfield(handles, 'thau') && isfield(handles, 'K') && isfield(handles, 'L')
+    if ~isempty(thau_global) && ~isempty(K_global) && ~isempty(L_global)
         % Definir el tiempo de muestreo en segundos
         tiempoMuestreo = 0.256; % Ajusta este valor según sea necesario
         
@@ -657,7 +659,10 @@ function controlar_Callback(hObject, eventdata, handles)
     end
 
 
+
 function ejecutarControl(~, ~, hObject)
+    global q0_global q1_global;
+    
     % Obtener handles actualizados
     handles = guidata(hObject);
     
@@ -692,8 +697,8 @@ function ejecutarControl(~, ~, hObject)
     error_actual = setpoint_actual - rpm_actual;
     
     % Obtener los valores de q0 y q1
-    q0 = handles.q0;
-    q1 = handles.q1;
+    q0 = q0_global;
+    q1 = q1_global;
     
     % Calcular el control actual
     u_actual = u_anterior + (q0 * error_actual) + (q1 * error_anterior);
@@ -711,3 +716,4 @@ function ejecutarControl(~, ~, hObject)
     
     % Guardar los cambios en handles
     guidata(hObject, handles);
+
