@@ -315,99 +315,13 @@ function serialCallback(obj, event, hObject)
     handles.magnitudes = [handles.magnitudes, rpm];
     handles.tiemposTranscurridos = [handles.tiemposTranscurridos, tiempoTranscurrido];
     
-
-%% =============================================================================================================    
-%  Si se va a identificar el sistema.
-
-    % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
-    intervalo = 10; % Intervalo de tiempo en segundos
-    umbralVariacion = 0.02; % Variacion maxima permitida (2%)
-    
-    % Encontrar las muestras dentro del intervalo de tiempo
-    indicesRecientes = find(handles.tiemposTranscurridos >= (tiempoTranscurrido - intervalo));
-    
-    if ~isempty(indicesRecientes)
-        magnitudesRecientes = handles.magnitudes(indicesRecientes);
-        magnitudMaxima = max(magnitudesRecientes);
-        magnitudMinima = min(magnitudesRecientes);
-        variacion = (magnitudMaxima - magnitudMinima) / magnitudMaxima;
-    
-        if variacion <= umbralVariacion
-            disp('Se ha alcanzado el establecimiento del sistema.');
-            set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
-            valorFinalPromedio = mean(magnitudesRecientes);
-            disp(['Valor final promedio: ', num2str(valorFinalPromedio)]);
-            valor63 = 0.63 * valorFinalPromedio;
-            valor283 = 0.283 * valorFinalPromedio;
-
-            % Detener el motor y la gráfica
-            handles.setpointValue = 0; % Inicializar el valor del setpoint
-            handles.motorState = 0; % Inicializar el estado del motor (0: detenido, 1: iniciado)
-            handles.graficar = false;
-            trama = [255, 0, 0]; % Trama de datos específica FF 00 00 en hexadecimal
-            fwrite(handles.s, trama, 'uint8');
-            disp('Motor detenido y gráfica detenida.');
-            
-            x = handles.tiemposTranscurridos;
-            y = handles.magnitudes;
-            constanteTiempo63 = csapi(y, x, valor63);
-            disp(['Tiempo interpolado para 63%: ', num2str(constanteTiempo63)]);
-            
-            % Si no se encuentra el valor, realizar interpolacion con csapi
-            x = handles.tiemposTranscurridos;
-            y = handles.magnitudes;
-            constanteTiempo283 = csapi(y, x, valor283);
-            disp(['Tiempo interpolado para 28.3%: ', num2str(constanteTiempo283)]);
-            
-            if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
-                t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
-                t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
-                K = valorFinalPromedio/handles.setpointRPM; % Usar el setpoint almacenado en RPM como K
-                disp(['K: ', num2str(K)]);
-                disp(['t63: ', num2str(t63)]);
-                disp(['t283: ', num2str(t283)]);
-                
-                % Calcular thau y L
-                thau = 1.5 * (t63 - t283);
-                L = t63 - thau;
-                
-                handles.K = K;
-                handles.thau = thau;
-                handles.L = L;
-                
-                disp(['thau: ', num2str(thau)]);
-                disp(['L: ', num2str(L)]);
-                
-                % Actualizar el static text con el tag label_thau
-                set(handles.label_thau, 'String', [num2str(thau, '%.2f'), ' + s']);
-                
-                set(handles.label_k, 'String', num2str(K, '%.2f'));
-                set(handles.label_L, 'String', ['-', num2str(L, '%.2f'), 's']);
-            
-                num = [K];
-                den = [thau 1];
-                sys = tf(num, den, 'InputDelay', L); % Incluir el retardo L en la función de transferencia
-                step(sys);
-                obj = stepinfo(sys);
-                ts = obj.SettlingTime;
-                mp = obj.Overshoot * 100;
-                disp(['Tiempo de establecimiento: ', num2str(ts)]);
-                disp(['Sobre impulso: ', num2str(mp)]);
-            
-                set(handles.label_settlingtime, 'String', ['Ts: ', num2str(ts, '%.2f'), ' s']);
-                set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
-                
-                if isfield(handles, 'timer') && isvalid(handles.timer)
-                    stop(handles.timer);
-                    delete(handles.timer);
-                end
-            
-            else
-                disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
-            end
-        else
-            % disp('La variacion de las muestras en los ultimos 3 segundos es mayor al 2%.');
-        end
+    % Verificar el estado
+    if handles.estado == 1
+        % Identificación del sistema
+        identificarSistema(handles, tiempoTranscurrido, rpm);
+    elseif handles.estado == 2
+        % Control del sistema
+        controlarSistema(handles, tiempoTranscurrido, rpm);
     end
     
     % Actualizar la grafica en el axes con el tag grafica_1
@@ -422,6 +336,7 @@ function serialCallback(obj, event, hObject)
     set(handles.label_rpm, 'String', [num2str(rpm), ' RPM']);
     % Guardar los cambios en handles
     guidata(hObject, handles);
+
     
     function input_setpoint_Callback(hObject, eventdata, handles)
     % hObject    handle to entrada_setpoint (see GCBO)
@@ -519,6 +434,115 @@ function serialCallback(obj, event, hObject)
         
         % Guardar los cambios en handles
         guidata(hObject, handles);
+
+function identificarSistema(handles, tiempoTranscurrido, rpm)
+    % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
+    intervalo = 10; % Intervalo de tiempo en segundos
+    umbralVariacion = 0.02; % Variacion maxima permitida (2%)
+    
+    % Encontrar las muestras dentro del intervalo de tiempo
+    indicesRecientes = find(handles.tiemposTranscurridos >= (tiempoTranscurrido - intervalo));
+    
+    if ~isempty(indicesRecientes)
+        magnitudesRecientes = handles.magnitudes(indicesRecientes);
+        magnitudMaxima = max(magnitudesRecientes);
+        magnitudMinima = min(magnitudesRecientes);
+        variacion = (magnitudMaxima - magnitudMinima) / magnitudMaxima;
+    
+        if variacion <= umbralVariacion
+            disp('Se ha alcanzado el establecimiento del sistema.');
+            set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
+            valorFinalPromedio = mean(magnitudesRecientes);
+            disp(['Valor final promedio: ', num2str(valorFinalPromedio)]);
+            valor63 = 0.63 * valorFinalPromedio;
+            valor283 = 0.283 * valorFinalPromedio;
+
+            % Detener el motor y la gráfica
+            handles.setpointValue = 0; % Inicializar el valor del setpoint
+            handles.motorState = 0; % Inicializar el estado del motor (0: detenido, 1: iniciado)
+            handles.graficar = false;
+            trama = [255, 0, 0]; % Trama de datos específica FF 00 00 en hexadecimal
+            fwrite(handles.s, trama, 'uint8');
+            disp('Motor detenido y gráfica detenida.');
+            
+            x = handles.tiemposTranscurridos;
+            y = handles.magnitudes;
+            constanteTiempo63 = csapi(y, x, valor63);
+            disp(['Tiempo interpolado para 63%: ', num2str(constanteTiempo63)]);
+            
+            % Si no se encuentra el valor, realizar interpolacion con csapi
+            x = handles.tiemposTranscurridos;
+            y = handles.magnitudes;
+            constanteTiempo283 = csapi(y, x, valor283);
+            disp(['Tiempo interpolado para 28.3%: ', num2str(constanteTiempo283)]);
+            
+            if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
+                t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
+                t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
+                K = valorFinalPromedio/handles.setpointRPM; % Usar el setpoint almacenado en RPM como K
+                disp(['K: ', num2str(K)]);
+                disp(['t63: ', num2str(t63)]);
+                disp(['t283: ', num2str(t283)]);
+                
+                % Calcular thau y L
+                thau = 1.5 * (t63 - t283);
+                L = t63 - thau;
+                
+                handles.K = K;
+                handles.thau = thau;
+                handles.L = L;
+                
+                disp(['thau: ', num2str(thau)]);
+                disp(['L: ', num2str(L)]);
+                
+                % Actualizar el static text con el tag label_thau
+                set(handles.label_thau, 'String', [num2str(thau, '%.2f'), ' + s']);
+                
+                set(handles.label_k, 'String', num2str(K, '%.2f'));
+                set(handles.label_L, 'String', ['-', num2str(L, '%.2f'), 's']);
+            
+                num = [K];
+                den = [thau 1];
+                sys = tf(num, den, 'InputDelay', L); % Incluir el retardo L en la función de transferencia
+                step(sys);
+                obj = stepinfo(sys);
+                ts = obj.SettlingTime;
+                mp = obj.Overshoot * 100;
+                disp(['Tiempo de establecimiento: ', num2str(ts)]);
+                disp(['Sobre impulso: ', num2str(mp)]);
+            
+                set(handles.label_settlingtime, 'String', ['Ts: ', num2str(ts, '%.2f'), ' s']);
+                set(handles.label_overshoot, 'String', ['Mp: ', num2str(mp, '%.2f'), '%']);
+                
+                if isfield(handles, 'timer') && isvalid(handles.timer)
+                    stop(handles.timer);
+                    delete(handles.timer);
+                end
+                
+                % Cambiar el estado a 2 (control)
+                handles.estado = 2;
+            
+            else
+                disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
+            end
+        else
+            % disp('La variacion de las muestras en los ultimos 3 segundos es mayor al 2%.');
+        end
+    end
+
+function controlarSistema(handles, tiempoTranscurrido, rpm)
+    % Aquí puedes implementar la lógica para el control del sistema
+    % Por ejemplo, actualizar la gráfica con los datos de control
+    disp('Controlando el sistema...');
+    % Actualizar la gráfica en el axes con el tag grafica_1
+    if handles.graficar
+        axes(handles.graph_1);
+        plot(handles.graph_1, handles.tiemposTranscurridos, handles.magnitudes, 'b', ...
+             handles.tiemposSetpoints, handles.setpoints, 'r--');
+        xlabel(handles.graph_1, 'Tiempo (s)');
+        ylabel(handles.graph_1, 'RPM');
+        title(handles.graph_1, 'Grafica de RPM vs Tiempo controlada');
+    end
 
     
     function actualizarMenuCOM(handles)
@@ -631,20 +655,59 @@ function controlar_Callback(hObject, eventdata, handles)
     else
         disp('Error: Los valores de thau, K y L no están disponibles.');
     end
-        
+
+
 function ejecutarControl(~, ~, hObject)
     % Obtener handles actualizados
+    handles = guidata(hObject);
     
-
-
-    error_anterior = handles.error_actual;
-    u_anterior = handles.u_actual;
-
-    error_actual = handles.setpoint - handles.y_actual;
+    % Obtener el último valor de magnitudes
+    if ~isempty(handles.magnitudes)
+        rpm_actual = handles.magnitudes(end);
+    else
+        rpm_actual = 0;
+    end
+    
+    % Obtener el último valor de setpointRPM
+    if ~isempty(handles.setpointRPM)
+        setpoint_actual = handles.setpointRPM(end);
+    else
+        setpoint_actual = 0;
+    end
+    
+    % Obtener los valores anteriores de error y control
+    if isfield(handles, 'error_anterior')
+        error_anterior = handles.error_anterior;
+    else
+        error_anterior = 0;
+    end
+    
+    if isfield(handles, 'u_anterior')
+        u_anterior = handles.u_anterior;
+    else
+        u_anterior = 0;
+    end
+    
+    % Calcular el error actual
+    error_actual = setpoint_actual - rpm_actual;
+    
+    % Obtener los valores de q0 y q1
+    q0 = handles.q0;
+    q1 = handles.q1;
+    
+    % Calcular el control actual
     u_actual = u_anterior + (q0 * error_actual) + (q1 * error_anterior);
     
+    % Asegurarse de que u_actual esté en el rango permitido (0-100%)
+    u_actual = max(0, min(100, u_actual));
+    
+    % Actualizar los valores anteriores
     handles.u_anterior = u_actual;
     handles.error_anterior = error_actual;
-
+    
+    % Enviar el valor de control al motor
+    trama = [255, round(u_actual), handles.motorState];
+    fwrite(handles.s, trama, 'uint8');
+    
     % Guardar los cambios en handles
     guidata(hObject, handles);

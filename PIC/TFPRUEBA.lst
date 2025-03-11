@@ -1,8 +1,8 @@
-CCS PCM C Compiler, Version 5.115, 29001               10-mar.-25 19:14
+CCS PCM C Compiler, Version 5.115, 29001               10-mar.-25 21:44
 
                Filename:   C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\TFPRUEBA.lst
 
-               ROM used:   622 words (8%)
+               ROM used:   628 words (8%)
                            Largest free fragment is 2048
                RAM used:   108 (29%) at main() level
                            120 (33%) worst case
@@ -231,7 +231,7 @@ CCS PCM C Compiler, Version 5.115, 29001               10-mar.-25 19:14
 00F5:  BCF    03.6
 00F6:  BCF    0A.3
 00F7:  BCF    0A.4
-00F8:  GOTO   234 (RETURN)
+00F8:  GOTO   23A (RETURN)
 *
 010E:  MOVF   0B,W
 010F:  BSF    03.6
@@ -316,7 +316,7 @@ CCS PCM C Compiler, Version 5.115, 29001               10-mar.-25 19:14
 015E:  BCF    03.6
 015F:  BCF    0A.3
 0160:  BCF    0A.4
-0161:  GOTO   255 (RETURN)
+0161:  GOTO   25B (RETURN)
 .................... 
 .................... #list
 .................... 
@@ -350,172 +350,179 @@ CCS PCM C Compiler, Version 5.115, 29001               10-mar.-25 19:14
 .................... #define ARRAY_SIZE 40 // 256 ms * 40 = 10.24 seconds
 .................... 
 .................... // Pre-calculated RPM values for a first-order system with a settling time of 10 seconds
-.................... /*    
+....................   
 ....................     int16 rpm_values[ARRAY_SIZE] = {
 ....................         0, 136, 259, 370, 470, 560, 642, 716, 782, 842,
 ....................         897, 946, 990, 1030, 1066, 1098, 1127, 1154, 1178, 1199,
 ....................         1219, 1236, 1252, 1267, 1280, 1291, 1302, 1311, 1320, 1328,
 ....................         1335, 1341, 1347, 1352, 1356, 1361, 1364, 1368, 1371, 1374
 ....................     };
-.................... */
+*
+017B:  CLRF   20
+017C:  CLRF   21
+017D:  MOVLW  88
+017E:  MOVWF  22
+017F:  CLRF   23
+0180:  MOVLW  03
+0181:  MOVWF  24
+0182:  MOVLW  01
+0183:  MOVWF  25
+0184:  MOVLW  72
+0185:  MOVWF  26
+0186:  MOVLW  01
+0187:  MOVWF  27
+0188:  MOVLW  D6
+0189:  MOVWF  28
+018A:  MOVLW  01
+018B:  MOVWF  29
+018C:  MOVLW  30
+018D:  MOVWF  2A
+018E:  MOVLW  02
+018F:  MOVWF  2B
+0190:  MOVLW  82
+0191:  MOVWF  2C
+0192:  MOVLW  02
+0193:  MOVWF  2D
+0194:  MOVLW  CC
+0195:  MOVWF  2E
+0196:  MOVLW  02
+0197:  MOVWF  2F
+0198:  MOVLW  0E
+0199:  MOVWF  30
+019A:  MOVLW  03
+019B:  MOVWF  31
+019C:  MOVLW  4A
+019D:  MOVWF  32
+019E:  MOVLW  03
+019F:  MOVWF  33
+01A0:  MOVLW  81
+01A1:  MOVWF  34
+01A2:  MOVLW  03
+01A3:  MOVWF  35
+01A4:  MOVLW  B2
+01A5:  MOVWF  36
+01A6:  MOVLW  03
+01A7:  MOVWF  37
+01A8:  MOVLW  DE
+01A9:  MOVWF  38
+01AA:  MOVLW  03
+01AB:  MOVWF  39
+01AC:  MOVLW  06
+01AD:  MOVWF  3A
+01AE:  MOVLW  04
+01AF:  MOVWF  3B
+01B0:  MOVLW  2A
+01B1:  MOVWF  3C
+01B2:  MOVLW  04
+01B3:  MOVWF  3D
+01B4:  MOVLW  4A
+01B5:  MOVWF  3E
+01B6:  MOVLW  04
+01B7:  MOVWF  3F
+01B8:  MOVLW  67
+01B9:  MOVWF  40
+01BA:  MOVLW  04
+01BB:  MOVWF  41
+01BC:  MOVLW  82
+01BD:  MOVWF  42
+01BE:  MOVLW  04
+01BF:  MOVWF  43
+01C0:  MOVLW  9A
+01C1:  MOVWF  44
+01C2:  MOVLW  04
+01C3:  MOVWF  45
+01C4:  MOVLW  AF
+01C5:  MOVWF  46
+01C6:  MOVLW  04
+01C7:  MOVWF  47
+01C8:  MOVLW  C3
+01C9:  MOVWF  48
+01CA:  MOVLW  04
+01CB:  MOVWF  49
+01CC:  MOVLW  D4
+01CD:  MOVWF  4A
+01CE:  MOVLW  04
+01CF:  MOVWF  4B
+01D0:  MOVLW  E4
+01D1:  MOVWF  4C
+01D2:  MOVLW  04
+01D3:  MOVWF  4D
+01D4:  MOVLW  F3
+01D5:  MOVWF  4E
+01D6:  MOVLW  04
+01D7:  MOVWF  4F
+01D8:  CLRF   50
+01D9:  MOVLW  05
+01DA:  MOVWF  51
+01DB:  MOVLW  0B
+01DC:  MOVWF  52
+01DD:  MOVLW  05
+01DE:  MOVWF  53
+01DF:  MOVLW  16
+01E0:  MOVWF  54
+01E1:  MOVLW  05
+01E2:  MOVWF  55
+01E3:  MOVLW  1F
+01E4:  MOVWF  56
+01E5:  MOVLW  05
+01E6:  MOVWF  57
+01E7:  MOVLW  28
+01E8:  MOVWF  58
+01E9:  MOVLW  05
+01EA:  MOVWF  59
+01EB:  MOVLW  30
+01EC:  MOVWF  5A
+01ED:  MOVLW  05
+01EE:  MOVWF  5B
+01EF:  MOVLW  37
+01F0:  MOVWF  5C
+01F1:  MOVLW  05
+01F2:  MOVWF  5D
+01F3:  MOVLW  3D
+01F4:  MOVWF  5E
+01F5:  MOVLW  05
+01F6:  MOVWF  5F
+01F7:  MOVLW  43
+01F8:  MOVWF  60
+01F9:  MOVLW  05
+01FA:  MOVWF  61
+01FB:  MOVLW  48
+01FC:  MOVWF  62
+01FD:  MOVLW  05
+01FE:  MOVWF  63
+01FF:  MOVLW  4C
+0200:  MOVWF  64
+0201:  MOVLW  05
+0202:  MOVWF  65
+0203:  MOVLW  51
+0204:  MOVWF  66
+0205:  MOVLW  05
+0206:  MOVWF  67
+0207:  MOVLW  54
+0208:  MOVWF  68
+0209:  MOVLW  05
+020A:  MOVWF  69
+020B:  MOVLW  58
+020C:  MOVWF  6A
+020D:  MOVLW  05
+020E:  MOVWF  6B
+020F:  MOVLW  5B
+0210:  MOVWF  6C
+0211:  MOVLW  05
+0212:  MOVWF  6D
+0213:  MOVLW  5E
+0214:  MOVWF  6E
+0215:  MOVLW  05
+0216:  MOVWF  6F
 .................... 
+.................... /*
 .................... int16 rpm_values[ARRAY_SIZE] = {
 ....................     0, 35, 70, 105, 140, 175, 210, 245, 280, 315,
 ....................     350, 385, 420, 455, 490, 525, 560, 595, 630, 665,
 ....................     700, 735, 770, 805, 840, 875, 910, 945, 980, 1015,
 ....................     1050, 1085, 1120, 1155, 1190, 1225, 1260, 1295, 1330, 1365
 .................... };
-*
-017B:  CLRF   20
-017C:  CLRF   21
-017D:  MOVLW  23
-017E:  MOVWF  22
-017F:  CLRF   23
-0180:  MOVLW  46
-0181:  MOVWF  24
-0182:  CLRF   25
-0183:  MOVLW  69
-0184:  MOVWF  26
-0185:  CLRF   27
-0186:  MOVLW  8C
-0187:  MOVWF  28
-0188:  CLRF   29
-0189:  MOVLW  AF
-018A:  MOVWF  2A
-018B:  CLRF   2B
-018C:  MOVLW  D2
-018D:  MOVWF  2C
-018E:  CLRF   2D
-018F:  MOVLW  F5
-0190:  MOVWF  2E
-0191:  CLRF   2F
-0192:  MOVLW  18
-0193:  MOVWF  30
-0194:  MOVLW  01
-0195:  MOVWF  31
-0196:  MOVLW  3B
-0197:  MOVWF  32
-0198:  MOVLW  01
-0199:  MOVWF  33
-019A:  MOVLW  5E
-019B:  MOVWF  34
-019C:  MOVLW  01
-019D:  MOVWF  35
-019E:  MOVLW  81
-019F:  MOVWF  36
-01A0:  MOVLW  01
-01A1:  MOVWF  37
-01A2:  MOVLW  A4
-01A3:  MOVWF  38
-01A4:  MOVLW  01
-01A5:  MOVWF  39
-01A6:  MOVLW  C7
-01A7:  MOVWF  3A
-01A8:  MOVLW  01
-01A9:  MOVWF  3B
-01AA:  MOVLW  EA
-01AB:  MOVWF  3C
-01AC:  MOVLW  01
-01AD:  MOVWF  3D
-01AE:  MOVLW  0D
-01AF:  MOVWF  3E
-01B0:  MOVLW  02
-01B1:  MOVWF  3F
-01B2:  MOVLW  30
-01B3:  MOVWF  40
-01B4:  MOVLW  02
-01B5:  MOVWF  41
-01B6:  MOVLW  53
-01B7:  MOVWF  42
-01B8:  MOVLW  02
-01B9:  MOVWF  43
-01BA:  MOVLW  76
-01BB:  MOVWF  44
-01BC:  MOVLW  02
-01BD:  MOVWF  45
-01BE:  MOVLW  99
-01BF:  MOVWF  46
-01C0:  MOVLW  02
-01C1:  MOVWF  47
-01C2:  MOVLW  BC
-01C3:  MOVWF  48
-01C4:  MOVLW  02
-01C5:  MOVWF  49
-01C6:  MOVLW  DF
-01C7:  MOVWF  4A
-01C8:  MOVLW  02
-01C9:  MOVWF  4B
-01CA:  MOVWF  4C
-01CB:  MOVLW  03
-01CC:  MOVWF  4D
-01CD:  MOVLW  25
-01CE:  MOVWF  4E
-01CF:  MOVLW  03
-01D0:  MOVWF  4F
-01D1:  MOVLW  48
-01D2:  MOVWF  50
-01D3:  MOVLW  03
-01D4:  MOVWF  51
-01D5:  MOVLW  6B
-01D6:  MOVWF  52
-01D7:  MOVLW  03
-01D8:  MOVWF  53
-01D9:  MOVLW  8E
-01DA:  MOVWF  54
-01DB:  MOVLW  03
-01DC:  MOVWF  55
-01DD:  MOVLW  B1
-01DE:  MOVWF  56
-01DF:  MOVLW  03
-01E0:  MOVWF  57
-01E1:  MOVLW  D4
-01E2:  MOVWF  58
-01E3:  MOVLW  03
-01E4:  MOVWF  59
-01E5:  MOVLW  F7
-01E6:  MOVWF  5A
-01E7:  MOVLW  03
-01E8:  MOVWF  5B
-01E9:  MOVLW  1A
-01EA:  MOVWF  5C
-01EB:  MOVLW  04
-01EC:  MOVWF  5D
-01ED:  MOVLW  3D
-01EE:  MOVWF  5E
-01EF:  MOVLW  04
-01F0:  MOVWF  5F
-01F1:  MOVLW  60
-01F2:  MOVWF  60
-01F3:  MOVLW  04
-01F4:  MOVWF  61
-01F5:  MOVLW  83
-01F6:  MOVWF  62
-01F7:  MOVLW  04
-01F8:  MOVWF  63
-01F9:  MOVLW  A6
-01FA:  MOVWF  64
-01FB:  MOVLW  04
-01FC:  MOVWF  65
-01FD:  MOVLW  C9
-01FE:  MOVWF  66
-01FF:  MOVLW  04
-0200:  MOVWF  67
-0201:  MOVLW  EC
-0202:  MOVWF  68
-0203:  MOVLW  04
-0204:  MOVWF  69
-0205:  MOVLW  0F
-0206:  MOVWF  6A
-0207:  MOVLW  05
-0208:  MOVWF  6B
-0209:  MOVLW  32
-020A:  MOVWF  6C
-020B:  MOVLW  05
-020C:  MOVWF  6D
-020D:  MOVLW  55
-020E:  MOVWF  6E
-020F:  MOVLW  05
-0210:  MOVWF  6F
+.................... */
 .................... 
 .................... volatile int datos_listos = 0;
 .................... volatile int i = 0;
@@ -612,132 +619,132 @@ CCS PCM C Compiler, Version 5.115, 29001               10-mar.-25 19:14
 017A:  BCF    03.7
 ....................     enable_interrupts(INT_RDA);
 *
-0211:  BSF    0C.5
+0217:  BSF    0C.5
 ....................     enable_interrupts(GLOBAL);
-0212:  MOVLW  C0
-0213:  BCF    03.5
-0214:  IORWF  0B,F
+0218:  MOVLW  C0
+0219:  BCF    03.5
+021A:  IORWF  0B,F
 .................... 
 ....................     // Continuar enviando el valor final hasta recibir la trama FF 00 00
 ....................     while (true) {
 ....................     
 ....................         if(imprimir){
-0215:  MOVF   30,F
-0216:  BTFSC  03.2
-0217:  GOTO   260
+021B:  MOVF   30,F
+021C:  BTFSC  03.2
+021D:  GOTO   266
 ....................             // Enviar los valores pre-calculados
 ....................           if(bucle){
-0218:  MOVF   31,F
-0219:  BTFSC  03.2
-021A:  GOTO   24E
+021E:  MOVF   31,F
+021F:  BTFSC  03.2
+0220:  GOTO   254
 ....................           
 ....................           for (int j = 0; j < ARRAY_SIZE; j++) {
-021B:  BSF    03.6
-021C:  CLRF   10
-021D:  MOVF   10,W
-021E:  SUBLW  27
-021F:  BTFSS  03.0
-0220:  GOTO   24C
+0221:  BSF    03.6
+0222:  CLRF   10
+0223:  MOVF   10,W
+0224:  SUBLW  27
+0225:  BTFSS  03.0
+0226:  GOTO   252
 ....................               printf("%ld -\n", rpm_values[j]); // Send RPM value via serial
-0221:  BCF    03.0
-0222:  RLF    10,W
-0223:  ADDLW  A0
-0224:  MOVWF  04
-0225:  BCF    03.7
-0226:  INCF   04,F
-0227:  MOVF   00,W
-0228:  MOVWF  12
-0229:  DECF   04,F
-022A:  MOVF   00,W
-022B:  MOVWF  11
-022C:  MOVLW  10
-022D:  MOVWF  04
-022E:  MOVF   12,W
-022F:  MOVWF  14
-0230:  MOVF   11,W
-0231:  MOVWF  13
-0232:  BCF    03.6
-0233:  GOTO   07D
-0234:  MOVLW  20
-0235:  BTFSS  0C.4
-0236:  GOTO   235
-0237:  MOVWF  19
-0238:  MOVLW  2D
-0239:  BTFSS  0C.4
-023A:  GOTO   239
-023B:  MOVWF  19
-023C:  MOVLW  0A
-023D:  BTFSS  0C.4
-023E:  GOTO   23D
-023F:  MOVWF  19
+0227:  BCF    03.0
+0228:  RLF    10,W
+0229:  ADDLW  A0
+022A:  MOVWF  04
+022B:  BCF    03.7
+022C:  INCF   04,F
+022D:  MOVF   00,W
+022E:  MOVWF  12
+022F:  DECF   04,F
+0230:  MOVF   00,W
+0231:  MOVWF  11
+0232:  MOVLW  10
+0233:  MOVWF  04
+0234:  MOVF   12,W
+0235:  MOVWF  14
+0236:  MOVF   11,W
+0237:  MOVWF  13
+0238:  BCF    03.6
+0239:  GOTO   07D
+023A:  MOVLW  20
+023B:  BTFSS  0C.4
+023C:  GOTO   23B
+023D:  MOVWF  19
+023E:  MOVLW  2D
+023F:  BTFSS  0C.4
+0240:  GOTO   23F
+0241:  MOVWF  19
+0242:  MOVLW  0A
+0243:  BTFSS  0C.4
+0244:  GOTO   243
+0245:  MOVWF  19
 ....................               delay_ms(256); // Wait for 256 ms
-0240:  MOVLW  02
-0241:  BSF    03.6
-0242:  MOVWF  11
-0243:  MOVLW  80
-0244:  MOVWF  12
-0245:  BCF    03.6
-0246:  CALL   0F9
+0246:  MOVLW  02
 0247:  BSF    03.6
-0248:  DECFSZ 11,F
-0249:  GOTO   243
-024A:  INCF   10,F
-024B:  GOTO   21D
+0248:  MOVWF  11
+0249:  MOVLW  80
+024A:  MOVWF  12
+024B:  BCF    03.6
+024C:  CALL   0F9
+024D:  BSF    03.6
+024E:  DECFSZ 11,F
+024F:  GOTO   249
+0250:  INCF   10,F
+0251:  GOTO   223
 ....................           }
 ....................           
 ....................           bucle = 0;
-024C:  BCF    03.6
-024D:  CLRF   31
+0252:  BCF    03.6
+0253:  CLRF   31
 ....................           
 ....................           }
 ....................         
 ....................         
 ....................         printf("1395 -\n"); // Send final RPM value via serial
-024E:  MOVLW  79
-024F:  BSF    03.6
-0250:  MOVWF  0D
-0251:  MOVLW  00
-0252:  MOVWF  0F
-0253:  BCF    03.6
-0254:  GOTO   10E
+0254:  MOVLW  79
+0255:  BSF    03.6
+0256:  MOVWF  0D
+0257:  MOVLW  00
+0258:  MOVWF  0F
+0259:  BCF    03.6
+025A:  GOTO   10E
 ....................         delay_ms(256); // Wait for 256 ms
-0255:  MOVLW  02
-0256:  BSF    03.6
-0257:  MOVWF  11
-0258:  MOVLW  80
-0259:  MOVWF  12
-025A:  BCF    03.6
-025B:  CALL   0F9
+025B:  MOVLW  02
 025C:  BSF    03.6
-025D:  DECFSZ 11,F
-025E:  GOTO   258
-025F:  BCF    03.6
+025D:  MOVWF  11
+025E:  MOVLW  80
+025F:  MOVWF  12
+0260:  BCF    03.6
+0261:  CALL   0F9
+0262:  BSF    03.6
+0263:  DECFSZ 11,F
+0264:  GOTO   25E
+0265:  BCF    03.6
 ....................          
 ....................         }
 ....................          
 ....................         // Verificar si se ha recibido la trama FF 00 00
 ....................         if (datos_listos) {
-0260:  MOVF   2B,F
-0261:  BTFSC  03.2
-0262:  GOTO   26C
+0266:  MOVF   2B,F
+0267:  BTFSC  03.2
+0268:  GOTO   272
 ....................             datos_listos = 0;
-0263:  CLRF   2B
+0269:  CLRF   2B
 ....................             if (buffer[0] == 0xFF && buffer[1] == 0x00 && buffer[2] == 0x00) {
-0264:  INCFSZ 2D,W
-0265:  GOTO   26C
-0266:  MOVF   2E,F
-0267:  BTFSS  03.2
-0268:  GOTO   26C
-0269:  MOVF   2F,F
-026A:  BTFSC  03.2
+026A:  INCFSZ 2D,W
+026B:  GOTO   272
+026C:  MOVF   2E,F
+026D:  BTFSS  03.2
+026E:  GOTO   272
+026F:  MOVF   2F,F
+0270:  BTFSC  03.2
 ....................                 break; // Salir del bucle si se recibe la trama FF 00 00
-026B:  GOTO   26D
+0271:  GOTO   273
 ....................             }
 ....................         }
-026C:  GOTO   215
+0272:  GOTO   21B
 ....................     }
 .................... }
-026D:  SLEEP
+0273:  SLEEP
 
 Configuration Fuses:
    Word  1: 3F73   RC NOWDT PUT BROWNOUT NOLVP NOCPD NOWRT NODEBUG NOPROTECT

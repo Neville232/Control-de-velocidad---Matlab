@@ -11,12 +11,12 @@ Type=4
 1=TFPRUEBA.c
 
 [defines]
-buildcount=11
+buildcount=12
 
 [ProjectLog]
 Days=1
 D1=10-03-2025
-D1_L=10
+D1_L=12
 D1_L1=[48189]Started Editing.
 D1_L2=[49077]Stopped Editing.
 D1_L3=[49085]Started Editing.
@@ -31,10 +31,12 @@ D1_L7=[69187]Project Closed.
 D1_L8=[69221]Project Opened.
 D1_L9=[69272]Project Closed.
 D1_L10=[69272]Project Opened.
+D1_L11=[78265]Started Editing.
+D1_L12=[78578]Stopped Editing.
 
 [Opened Files]
 1=TFPRUEBA.c
-t1=1
+t1=2
 2=E:\Matlab v2\ENCODER_MATLAB.c
 t2=1
 3=TFPRUEBA.c
