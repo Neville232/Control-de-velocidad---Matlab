@@ -120,10 +120,14 @@ function varargout = UI(varargin)
         set(handles.label_rpm, 'String', 'Motor encendido');
         if isfield(handles, 's') && isvalid(handles.s)
             handles.motorState = 1; % Iniciar el motor
-            trama = [255, handles.setpointValue, handles.motorState]; % Crear la trama de datos
-            disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
-            fwrite(handles.s, trama, 'uint8'); % Enviar la trama de datos
-            disp('Comando de inicio enviado.');
+            
+            if handles.estado == 1
+                trama = [255, handles.setpointValue, handles.motorState]; % Crear la trama de datos
+                disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
+                fwrite(handles.s, trama, 'uint8'); % Enviar la trama de datos
+                disp('Comando de inicio enviado.');
+            end
+
             set(handles.button_stop, 'BackgroundColor', [0.5, 1, 0.5]);
             set(handles.button_start, 'BackgroundColor', [0.94, 0.94, 0.94]);
             
