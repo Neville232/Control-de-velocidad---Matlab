@@ -122,6 +122,8 @@ function UI_CloseRequestFcn(hObject, eventdata, handles)
 
 % Variables globales necesarias:
 global global_s
+global global_timer
+global global_timerControl
 
 % Desconectar el puerto serial si esta conectado
 if ~isempty(global_s) && isvalid(global_s)
@@ -129,6 +131,36 @@ if ~isempty(global_s) && isvalid(global_s)
     delete(global_s);
     global_s = [];
     disp('Puerto serial desconectado.');
+end
+
+% Detener el motor
+if ~isempty(global_s) && isvalid(global_s)
+    global_setpointValue = 0; % Detener el motor
+    trama = [255, global_setpointValue, 1]; % Crear la trama de datos
+    disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
+    fwrite(global_s, trama, 'uint8'); % Enviar la trama de datos
+    pause(1);
+    global_motorState = 0;
+    trama = [255, 0, global_motorState]; % Crear la trama de datos
+    disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
+    fwrite(global_s, trama, 'uint8'); % Enviar la trama de datos
+    disp('Comando de parada enviado.');
+end
+
+% Detener y eliminar el temporizador global_timer si existe
+if ~isempty(global_timer) && isvalid(global_timer)
+    stop(global_timer);
+    delete(global_timer);
+    global_timer = [];
+    disp('Temporizador global_timer detenido y eliminado.');
+end
+
+% Detener y eliminar el temporizador global_timerControl si existe
+if ~isempty(global_timerControl) && isvalid(global_timerControl)
+    stop(global_timerControl);
+    delete(global_timerControl);
+    global_timerControl = [];
+    disp('Temporizador global_timerControl detenido y eliminado.');
 end
 
 % Guardar los cambios en handles
@@ -417,18 +449,25 @@ global global_timer
 global global_s
 
 if ~isempty(global_s) && isvalid(global_s)
-    global_motorState = 0; % Detener el motor
-    trama = [255, global_stpointValue, global_motorState]; % Crear la trama de datos
+    global_setpointValue = 0; % Detener el motor
+    trama = [255, global_setpointValue, 1]; % Crear la trama de datos
+    disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
+    fwrite(global_s, trama, 'uint8'); % Enviar la trama de datos
+    pause(1);
+    global_motorState = 0;
+    trama = [255, 0, global_motorState]; % Crear la trama de datos
     disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
     fwrite(global_s, trama, 'uint8'); % Enviar la trama de datos
     disp('Comando de parada enviado.');
     set(handles.button_start, 'BackgroundColor', [0.5, 1, 0.5]);
     set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
     
-    % Detener el temporizador
+    % Detener y eliminar el temporizador global_timer si existe
     if ~isempty(global_timer) && isvalid(global_timer)
         stop(global_timer);
         delete(global_timer);
+        global_timer = [];
+        disp('Temporizador global_timer detenido y eliminado.');
     end
 end
 
