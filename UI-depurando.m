@@ -1,0 +1,43 @@
+
+    
+
+    
+
+
+
+
+
+        
+    % --- Executes on button press in boton_detener.
+   
+
+    
+    
+
+    
+    % --- Executes on button press in boton_desconectar.
+    
+    
+
+
+
+    
+    
+    
+    
+
+
+
+
+
+    
+    
+    
+    
+    % --- Executes on button press in calcular_controlador.
+    
+
+
+
+
+

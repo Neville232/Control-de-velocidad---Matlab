@@ -1,0 +1,237 @@
+CCS PCM C Compiler, Version 5.115, 29001               11-mar.-25 22:05
+
+               Filename:   C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\prueba.lst
+
+               ROM used:   186 words (2%)
+                           Largest free fragment is 2048
+               RAM used:   9 (2%) at main() level
+                           12 (3%) worst case
+               Stack used: 0 locations
+               Stack size: 8
+
+*
+0000:  MOVLW  00
+0001:  MOVWF  0A
+0002:  GOTO   07A
+0003:  NOP
+.................... //#include <18F45K50.h>
+.................... #include <16f877.h>
+.................... //////////// Standard Header file for the PIC16F877 device ////////////////
+.................... ///////////////////////////////////////////////////////////////////////////
+.................... ////        (C) Copyright 1996, 2020 Custom Computer Services          ////
+.................... //// This source code may only be used by licensed users of the CCS C  ////
+.................... //// compiler.  This source code may only be distributed to other      ////
+.................... //// licensed users of the CCS C compiler.  No other use, reproduction ////
+.................... //// or distribution is permitted without written permission.          ////
+.................... //// Derivative programs created using this software in object code    ////
+.................... //// form are not restricted in any way.                               ////
+.................... ///////////////////////////////////////////////////////////////////////////
+.................... #device PIC16F877
+0004:  DATA D0,34
+0005:  DATA 6E,10
+0006:  DATA C8,34
+0007:  DATA 67,34
+0008:  DATA 00,00
+0009:  DATA D0,34
+000A:  DATA 6E,10
+000B:  DATA CC,37
+000C:  DATA 77,00
+000D:  MOVF   0B,W
+000E:  MOVWF  23
+000F:  BCF    0B.7
+0010:  BSF    03.5
+0011:  BSF    03.6
+0012:  BSF    0C.7
+0013:  BSF    0C.0
+0014:  NOP
+0015:  NOP
+0016:  BCF    03.5
+0017:  BCF    03.6
+0018:  BTFSC  23.7
+0019:  BSF    0B.7
+001A:  BSF    03.6
+001B:  MOVF   0C,W
+001C:  ANDLW  7F
+001D:  BTFSC  03.2
+001E:  GOTO   063
+001F:  BCF    03.6
+0020:  MOVWF  23
+0021:  BSF    03.6
+0022:  MOVF   0D,W
+0023:  BCF    03.6
+0024:  MOVWF  24
+0025:  BSF    03.6
+0026:  MOVF   0F,W
+0027:  BCF    03.6
+0028:  MOVWF  25
+0029:  MOVF   23,W
+002A:  BTFSS  0C.4
+002B:  GOTO   02A
+002C:  MOVWF  19
+002D:  MOVF   24,W
+002E:  BSF    03.6
+002F:  MOVWF  0D
+0030:  BCF    03.6
+0031:  MOVF   25,W
+0032:  BSF    03.6
+0033:  MOVWF  0F
+0034:  BCF    03.6
+0035:  MOVF   0B,W
+0036:  MOVWF  26
+0037:  BCF    0B.7
+0038:  BSF    03.5
+0039:  BSF    03.6
+003A:  BSF    0C.7
+003B:  BSF    0C.0
+003C:  NOP
+003D:  NOP
+003E:  BCF    03.5
+003F:  BCF    03.6
+0040:  BTFSC  26.7
+0041:  BSF    0B.7
+0042:  BSF    03.6
+0043:  RLF    0C,W
+0044:  RLF    0E,W
+0045:  ANDLW  7F
+0046:  BTFSC  03.2
+0047:  GOTO   063
+0048:  BCF    03.6
+0049:  MOVWF  23
+004A:  BSF    03.6
+004B:  MOVF   0D,W
+004C:  BCF    03.6
+004D:  MOVWF  24
+004E:  BSF    03.6
+004F:  MOVF   0F,W
+0050:  BCF    03.6
+0051:  MOVWF  25
+0052:  MOVF   23,W
+0053:  BTFSS  0C.4
+0054:  GOTO   053
+0055:  MOVWF  19
+0056:  MOVF   24,W
+0057:  BSF    03.6
+0058:  MOVWF  0D
+0059:  BCF    03.6
+005A:  MOVF   25,W
+005B:  BSF    03.6
+005C:  MOVWF  0F
+005D:  INCF   0D,F
+005E:  BTFSC  03.2
+005F:  INCF   0F,F
+0060:  BCF    03.6
+0061:  GOTO   00D
+0062:  BSF    03.6
+0063:  BCF    03.6
+0064:  RETURN
+.................... 
+.................... #list
+.................... 
+.................... //#use delay(internal=4MHz)
+.................... #use delay(crystal=4MHz)
+0065:  MOVLW  24
+0066:  MOVWF  04
+0067:  BCF    03.7
+0068:  MOVF   00,W
+0069:  BTFSC  03.2
+006A:  GOTO   079
+006B:  MOVLW  01
+006C:  MOVWF  78
+006D:  CLRF   77
+006E:  DECFSZ 77,F
+006F:  GOTO   06E
+0070:  DECFSZ 78,F
+0071:  GOTO   06D
+0072:  MOVLW  4A
+0073:  MOVWF  77
+0074:  DECFSZ 77,F
+0075:  GOTO   074
+0076:  GOTO   077
+0077:  DECFSZ 00,F
+0078:  GOTO   06B
+0079:  RETURN
+.................... //#fuses XT, NOWDT, NOPLLEN, NOLVP
+.................... #use rs232(baud=9600, xmit=PIN_C6, rcv=PIN_C7, stream=PC, parity=N, bits=8)
+.................... 
+.................... 
+.................... void main(){
+007A:  MOVF   03,W
+007B:  ANDLW  1F
+007C:  MOVWF  03
+007D:  MOVLW  19
+007E:  BSF    03.5
+007F:  MOVWF  19
+0080:  MOVLW  A6
+0081:  MOVWF  18
+0082:  MOVLW  90
+0083:  BCF    03.5
+0084:  MOVWF  18
+0085:  MOVLW  FF
+0086:  MOVWF  20
+0087:  CLRF   22
+0088:  CLRF   21
+0089:  BSF    03.5
+008A:  BSF    1F.0
+008B:  BSF    1F.1
+008C:  BSF    1F.2
+008D:  BCF    1F.3
+008E:  BCF    03.7
+.................... 
+....................     while (true){
+.................... 
+....................         output_high(PIN_c2);
+008F:  BCF    03.5
+0090:  BCF    20.2
+0091:  MOVF   20,W
+0092:  BSF    03.5
+0093:  MOVWF  07
+0094:  BCF    03.5
+0095:  BSF    07.2
+....................         printf("Pin High");
+0096:  MOVLW  04
+0097:  BSF    03.6
+0098:  MOVWF  0D
+0099:  MOVLW  00
+009A:  MOVWF  0F
+009B:  BCF    03.6
+009C:  CALL   00D
+....................         delay_ms(2000);
+009D:  MOVLW  08
+009E:  MOVWF  23
+009F:  MOVLW  FA
+00A0:  MOVWF  24
+00A1:  CALL   065
+00A2:  DECFSZ 23,F
+00A3:  GOTO   09F
+....................         output_low(PIN_c2);
+00A4:  BCF    20.2
+00A5:  MOVF   20,W
+00A6:  BSF    03.5
+00A7:  MOVWF  07
+00A8:  BCF    03.5
+00A9:  BCF    07.2
+....................         printf("Pin Low");
+00AA:  MOVLW  09
+00AB:  BSF    03.6
+00AC:  MOVWF  0D
+00AD:  MOVLW  00
+00AE:  MOVWF  0F
+00AF:  BCF    03.6
+00B0:  CALL   00D
+....................         delay_ms(2000);
+00B1:  MOVLW  08
+00B2:  MOVWF  23
+00B3:  MOVLW  FA
+00B4:  MOVWF  24
+00B5:  CALL   065
+00B6:  DECFSZ 23,F
+00B7:  GOTO   0B3
+00B8:  GOTO   090
+....................         
+....................     }
+....................     
+.................... }
+00B9:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F71   XT NOWDT PUT BROWNOUT NOLVP NOCPD NOWRT NODEBUG NOPROTECT

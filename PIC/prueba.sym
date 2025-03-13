@@ -1,0 +1,68 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+004-005 @WRITE_PROGRAM_MEMORY8.P2
+008     PSP_DATA
+015     CCP_1
+015     CCP_1_LOW
+016     CCP_1_HIGH
+01B     CCP_2_LOW
+01B     CCP_2
+01C     CCP_2_HIGH
+020     @TRIS_C
+021-022 @sprintf_string
+023     main.@SCRATCH1
+023     @PSTRINGC7_9600_62_63.@SCRATCH1
+024     @delay_ms1.P1
+024     @PSTRINGC7_9600_62_63.@SCRATCH2
+025     @PSTRINGC7_9600_62_63.@SCRATCH3
+026     @PSTRINGC7_9600_62_63.@SCRATCH4
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+10D-10E @WRITE_PROGRAM_MEMORY8.P1
+10D-10E @READ_PROGRAM_MEMORY8.P2
+
+ROM Allocation:
+000004  @const698.call
+000009  @const703.call
+00000D  @PSTRINGC7_9600_62_63
+000065  @delay_ms1
+00007A  @cinit1
+00007A  main
+00008E  @cinit2
+
+Project Directory:
+    C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\
+
+Project Files:
+    prueba.c                                                [11-mar.-25 22:05  CRC=6FD3FC6A]
+    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16f877.h [07-mar.-23 19:19  CRC=44E754B2]
+
+Source signature=F9A2A5CE
+Program memory checksum=0000
+Hex file CRC=B4B4
+
+Units:
+    C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\prueba (main)
+
+Compiler Settings:
+    Processor:      PIC16F877
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Compile Mode:   CCS5
+
+Output Files:
+    XREF file:   prueba.xsym
+    Errors:      prueba.err
+    Ext Symbols: prueba.esym
+    INHX8:       prueba.hex
+    Symbols:     prueba.sym
+    List:        prueba.lst
+    Debug/COFF:  prueba.cof
+    Project:     prueba.ccspjt
+    Call Tree:   prueba.tre
+    Statistics:  prueba.STA

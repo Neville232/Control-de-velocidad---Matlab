@@ -1,0 +1,22 @@
+//#include <18F45K50.h>
+#include <16f877.h>
+//#use delay(internal=4MHz)
+#use delay(clock=4MHz)
+//#fuses XT, NOWDT, NOPLLEN, NOLVP
+#use rs232(baud=9600, xmit=PIN_C6, rcv=PIN_C7, stream=PC, parity=N, bits=8)
+
+
+void main(){
+
+    while (true){
+
+        output_high(PIN_c2);
+        printf("Pin High");
+        delay_ms(2000);
+        output_low(PIN_c2);
+        printf("Pin Low");
+        delay_ms(2000);
+        
+    }
+    
+}
