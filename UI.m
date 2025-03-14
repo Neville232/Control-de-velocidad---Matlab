@@ -69,6 +69,7 @@ global global_tiempoInicio
 global global_stpointValue
 global global_motorState
 global global_estado
+global global_controlando
 
 % Declarar variables globales para los parámetros de identificación del sistema y del controlador
 global global_thau
@@ -89,16 +90,30 @@ global global_error_anterior
 global global_timerControl
 global global_s
 
+global global_RPMmax
+global global_constM
+global global_constC
+global global_alpha
+global global_beta
+
+% PARAMETRIZAR
+global_RPMmax = 1400;       % RPM maximo
+global_constM = 1;          % Pendiente de la recta
+global_constC = 0;          % Desplazamiento
+global_alpha = 0.6;         % Filtro
+global_beta = 0;            % Filtro
+
 global_tiempo = [];
 global_magnitudes = [];
 global_tiemposTranscurridos = [];
 global_stpoints = [];
 global_tiemposSetpoints = [];
-global_graficar = false; % Variable para controlar el inicio de la gráfica
-global_tiempoInicio = []; % Inicializar tiempoInicio
-global_stpointValue = 0; % Inicializar el valor del setpoint
-global_motorState = 0; % Inicializar el estado del motor (0: detenido, 1: iniciado)
+global_graficar = false;    % Variable para controlar el inicio de la gráfica
+global_tiempoInicio = [];   % Inicializar tiempoInicio
+global_stpointValue = 0;    % Inicializar el valor del setpoint
+global_motorState = 0;      % Inicializar el estado del motor (0: detenido, 1: iniciado)
 global_estado = 1;
+global_controlando = 0;
 
 ylim(handles.graph_1, [0 1500]);
 
@@ -124,6 +139,9 @@ function UI_CloseRequestFcn(hObject, eventdata, handles)
 global global_s
 global global_timer
 global global_timerControl
+global global_controlando
+
+global_controlando = 0;
 
 % Desconectar el puerto serial si esta conectado
 if ~isempty(global_s) && isvalid(global_s)
@@ -163,6 +181,63 @@ if ~isempty(global_timerControl) && isvalid(global_timerControl)
     disp('Temporizador global_timerControl detenido y eliminado.');
 end
 
+% Eliminar todos los temporizadores existentes
+timers = timerfindall;
+if ~isempty(timers)
+    stop(timers);
+    delete(timers);
+    disp('Todos los temporizadores han sido detenidos y eliminados.');
+end
+
+% Resetear todas las variables globales
+global global_tiempo
+global global_magnitudes
+global global_tiemposTranscurridos
+global global_stpoints
+global global_tiemposSetpoints
+global global_graficar
+global global_tiempoInicio
+global global_stpointValue
+global global_motorState
+global global_estado
+global global_thau
+global global_K
+global global_L
+global global_Kc
+global global_ti
+global global_q0
+global global_q1
+global global_setpointPorcentaje
+global global_setpointRPM
+global global_rpm_anterior
+global global_u_anterior
+global global_error_anterior
+global global_s
+
+global_tiempo = [];
+global_magnitudes = [];
+global_tiemposTranscurridos = [];
+global_stpoints = [];
+global_tiemposSetpoints = [];
+global_graficar = false;
+global_tiempoInicio = [];
+global_stpointValue = 0;
+global_motorState = 0;
+global_estado = 1;
+global_thau = [];
+global_K = [];
+global_L = [];
+global_Kc = [];
+global_ti = [];
+global_q0 = [];
+global_q1 = [];
+global_setpointPorcentaje = [];
+global_setpointRPM = [];
+global_rpm_anterior = [];
+global_u_anterior = [];
+global_error_anterior = [];
+global_s = [];
+
 % Guardar los cambios en handles
 guidata(hObject, handles);
 
@@ -193,6 +268,11 @@ puertosCOM = info.SerialPorts;
 
 % Actualizar el popupmenu con los puertos COM disponibles
 set(handles.menuCOM, 'String', puertosCOM);
+
+% Seleccionar el último puerto de la lista por defecto
+if ~isempty(puertosCOM)
+    set(handles.menuCOM, 'Value', length(puertosCOM));
+end
 
 % Guardar los cambios en handles
 guidata(handles.figure1, handles);
@@ -405,6 +485,8 @@ global global_tiemposSetpoints
 global global_tiempoInicioMotor
 global global_timer
 global global_s
+global global_controlando
+global global_timerControl
 
 set(handles.label_rpm, 'String', 'Motor encendido');
 if ~isempty(global_s) && isvalid(global_s)
@@ -431,6 +513,19 @@ if ~isempty(global_s) && isvalid(global_s)
     global_timer = timer('ExecutionMode', 'fixedRate', 'Period', 0.256, ...
                             'TimerFcn', {@updateSetpointGraph, hObject});
     start(global_timer);
+
+    if global_controlando == 1
+        % Definir el tiempo de muestreo en segundos
+        tiempoMuestreo = 0.256; % Ajusta este valor según sea necesario
+
+        % Crear el temporizador
+        global_timerControl = timer('ExecutionMode', 'fixedRate', 'Period', tiempoMuestreo, ...
+            'TimerFcn', {@ejecutarControl, hObject});
+
+        % Iniciar el temporizador
+        start(global_timerControl);
+    end
+
 end
 
 % Guardar los cambios en handles
@@ -492,6 +587,8 @@ global global_stpoints
 global global_tiemposSetpoints
 global global_rpm_anterior
 global global_s
+global global_alpha
+global global_beta
 
 % Obtener handles actualizados
 handles = guidata(hObject);
@@ -512,13 +609,10 @@ dato = strrep(dato, '-', '');
 rpm_actual = str2double(dato);
 disp(['Dato recibido: ', num2str(rpm_actual)]);
 
-% Parámetros del filtro
-alpha = 0.6; % Ajusta este valor según sea necesario
-beta = 0; % Ajusta este valor según sea necesario beta es 0 
 
 % Aplicar el filtro de media de movimiento
 if ~isempty(global_rpm_anterior) && global_rpm_anterior ~= 0
-    rpm = (beta + 1) * (alpha * rpm_actual + ((1 - alpha) * global_rpm_anterior));
+    rpm = (global_beta + 1) * (global_alpha * rpm_actual + ((1 - global_alpha) * global_rpm_anterior));
 else
     rpm = rpm_actual;
 end
@@ -608,8 +702,6 @@ guidata(hObject, handles);
 
 
 function identificarSistema(handles, tiempoTranscurrido, rpm)
-
-
 % Variables globales necesarias:
 global global_tiemposTranscurridos
 global global_magnitudes
@@ -620,6 +712,8 @@ global global_estado
 global global_thau
 global global_K
 global global_L
+global global_s
+global global_setpointRPM
 
 % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
 intervalo = 10; % Intervalo de tiempo en segundos
@@ -647,24 +741,27 @@ if ~isempty(indicesRecientes)
         global_motorState = 0; % Inicializar el estado del motor (0: detenido, 1: iniciado)
         global_graficar = false;
         trama = [255, 0, 0]; % Trama de datos específica FF 00 00 en hexadecimal
-        fwrite(handles.s, trama, 'uint8');
+        fwrite(global_s, trama, 'uint8');        
         disp('Motor detenido y gráfica detenida.');
-        
         x = global_tiemposTranscurridos;
         y = global_magnitudes;
-        constanteTiempo63 = csapi(y, x, valor63);
-        disp(['Tiempo interpolado para 63%: ', num2str(constanteTiempo63)]);
-        
-        % Si no se encuentra el valor, realizar interpolacion con csapi
-        x = global_tiemposTranscurridos;
-        y = global_magnitudes;
-        constanteTiempo283 = csapi(y, x, valor283);
-        disp(['Tiempo interpolado para 28.3%: ', num2str(constanteTiempo283)]);
+
+        if length(x) >= 2 && length(y) >= 2
+            constanteTiempo63 = csapi(y, x, valor63);
+            disp(['Tiempo interpolado para 63%: ', num2str(constanteTiempo63)]);
+            
+            constanteTiempo283 = csapi(y, x, valor283);
+            disp(['Tiempo interpolado para 28.3%: ', num2str(constanteTiempo283)]);
+        else
+            disp('No hay suficientes datos para realizar la interpolación.');
+            constanteTiempo63 = NaN;
+            constanteTiempo283 = NaN;
+        end
         
         if ~isnan(constanteTiempo63) && ~isnan(constanteTiempo283)
             t63 = constanteTiempo63; % El tiempo en el que la magnitud alcanza el 63% del valor final
             t283 = constanteTiempo283; % El tiempo en el que la magnitud alcanza el 28.3% del valor final
-            K = valorFinalPromedio/handles.setpointRPM; % Usar el setpoint almacenado en RPM como K
+            K = valorFinalPromedio / global_setpointRPM; % Usar el setpoint almacenado en RPM como K
             disp(['K: ', num2str(K)]);
             disp(['t63: ', num2str(t63)]);
             disp(['t283: ', num2str(t283)]);
@@ -744,6 +841,91 @@ end
 %% ===========================================================================================
 
 
+function calcular_controlador_Callback(hObject, eventdata, handles)
+% Variables globales necesarias:
+global global_thau
+global global_K
+global global_L
+global global_q0
+global global_q1
+
+% Asegurarse de que los valores de thau, K y L estén disponibles
+if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
+    thau = global_thau;
+    K = global_K;
+    L = global_L;
+    muestreo = 0.256;
+
+    % Calcular los parámetros del controlador
+    Kc = 0.9 * thau / (K * L);
+    ti = 3.33 * L;
+
+    % Asegurarse de que ti es un escalar
+    if isscalar(ti)
+        global_q0 = Kc * (1 + (muestreo / (2 * ti)));
+        global_q1 = -Kc * (1 - (muestreo / (2 * ti)));
+        q0 = global_q0;
+        q1 = global_q1;
+
+        disp(['thau: ', num2str(thau, '%.2f')])
+        disp(['K: ', num2str(K, '%.2f')])
+        disp(['L: ', num2str(L, '%.2f')])
+        disp(['Kc: ', num2str(Kc, '%.2f')])
+        disp(['q0: ', num2str(q0, '%.2f')])
+        disp(['q1: ', num2str(q1, '%.2f')])
+
+        % Actualizar los static text con los tag label_Kc y label_ti
+        set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
+        set(handles.label_ti, 'String', num2str(ti, '%.2f'));
+    else
+        disp('Error: ti no es un escalar.');
+    end
+else
+    disp('Error: Los valores de thau, K y L no están disponibles.');
+end
+
+% Guardar los cambios en handles
+guidata(hObject, handles);
+
+
+%% ===========================================================================================
+
+function controlar_Callback(hObject, eventdata, handles)
+% hObject    handle to controlar (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Variables globales necesarias:
+global global_thau
+global global_K
+global global_L
+global global_timerControl
+global global_setpointRPM
+global global_controlando
+
+% Asegurarse de que los valores de thau, K y L estén disponibles
+if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
+    % Definir el tiempo de muestreo en segundos
+    tiempoMuestreo = 0.256; % Ajusta este valor según sea necesario
+    
+    global_u_anterior = 0;
+    global_error_anterior = global_setpointRPM;
+
+    global_controlando = 1;
+    
+    % Cambiar el color del botón para indicar que está activo
+    set(handles.controlar, 'BackgroundColor', [0.5, 1, 0.5]);
+    
+    % Guardar los cambios en handles
+    guidata(hObject, handles);
+else
+    disp('Error: Los valores de thau, K y L no están disponibles.');
+end
+
+
+%% ===========================================================================================
+
+
 function controlar_Callback(hObject, eventdata, handles)
 % hObject    handle to controlar (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -784,39 +966,6 @@ end
 %% ===========================================================================================
 
 
-function controlar_Callback(hObject, eventdata, handles)
-% hObject    handle to controlar (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Asegurarse de que los valores de thau, K y L estén disponibles
-if isfield(handles, 'thau') && isfield(handles, 'K') && isfield(handles, 'L')
-    % Definir el tiempo de muestreo en segundos
-    tiempoMuestreo = 0.256; % Ajusta este valor según sea necesario
-    
-    u_anterior = 0;
-    error_anterior = handles.setpointRPM;
-
-    % Crear el temporizador
-    handles.timerControl = timer('ExecutionMode', 'fixedRate', 'Period', tiempoMuestreo, ...
-                                    'TimerFcn', {@ejecutarControl, hObject});
-    
-    % Iniciar el temporizador
-    start(handles.timerControl);
-    
-    % Cambiar el color del botón para indicar que está activo
-    set(handles.controlar, 'BackgroundColor', [0.5, 1, 0.5]);
-    
-    % Guardar los cambios en handles
-    guidata(hObject, handles);
-else
-    disp('Error: Los valores de thau, K y L no están disponibles.');
-end
-
-
-%% ===========================================================================================
-
-
 function ejecutarControl(~, ~, hObject)
 % Variables globales necesarias:
 global global_magnitudes
@@ -827,9 +976,18 @@ global global_u_anterior
 global global_error_anterior
 global global_setpointRPM
 global global_s
+global global_RPMmax
+global global_constM
+global global_constC
 
 % Obtener handles actualizados
 handles = guidata(hObject);
+
+% Verificar si hObject es un handle válido
+if isempty(handles)
+    disp('Error: hObject no es un handle válido.');
+    return;
+end
 
 % Obtener el último valor de magnitudes
 if ~isempty(global_magnitudes)
@@ -842,8 +1000,17 @@ end
 setpoint_actual = global_setpointRPM;
 
 % Obtener los valores anteriores de error y control
-error_anterior = global_error_anterior;
-u_anterior = global_u_anterior;
+if isempty(global_error_anterior)
+    error_anterior = 0;
+else
+    error_anterior = global_error_anterior;
+end
+
+if isempty(global_u_anterior)
+    u_anterior = 0;
+else
+    u_anterior = global_u_anterior;
+end
 
 % Calcular el error actual
 error_actual = setpoint_actual - rpm_actual;
@@ -856,15 +1023,30 @@ q1 = global_q1;
 u_actual = u_anterior + (q0 * error_actual) + (q1 * error_anterior);
 
 % Asegurarse de que u_actual esté en el rango permitido (0-100%)
-u_actual = max(0, min(100, u_actual));
+cargaPWM = ((u_actual/global_RPMmax) * 100 * global_consM) + global_consC;
+
+cargaPWM = max(0, min(100, cargaPWM));
 
 % Actualizar los valores anteriores
 global_u_anterior = u_actual;
 global_error_anterior = error_actual;
 
-% Enviar el valor de control al motor
-trama = [255, round(u_actual), global_motorState];
-fwrite(global_s, trama, 'uint8');
+% Verificar si el puerto serial está abierto antes de escribir en él
+if ~isempty(global_s) && isvalid(global_s) && strcmp(global_s.Status, 'open')
+    % Enviar el valor de control al motor
+    trama = [255, round(cargaPWM), global_motorState];
+    disp(['RPM actual: ', num2str(rpm_actual)]); % Mensaje de depuración
+    disp(['Setpoint actual: ', num2str(setpoint_actual)]); % Mensaje de depuración
+    disp(['Error actual: ', num2str(error_actual)]); % Mensaje de depuración
+    disp(['q0: ', num2str(q0)]); % Mensaje de depuración
+    disp(['q1: ', num2str(q1)]); % Mensaje de depuración
+    disp(['u_anterior: ', num2str(u_anterior)]); % Mensaje de depuración
+    disp(['u_actual: ', num2str(u_actual)]); % Mensaje de depuración
+    disp(['Salida de controlador: ', num2str(round(u_actual))]); % Imprimir la trama en la consola
+    fwrite(global_s, trama, 'uint8');
+else
+    disp('Error: El puerto serial no está abierto.');
+end
 
 % Guardar los cambios en handles
 guidata(hObject, handles);
