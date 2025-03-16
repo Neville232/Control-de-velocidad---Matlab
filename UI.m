@@ -101,12 +101,17 @@ global color_default
 global color_activo
 global color_inactivo
 
+global global_intervalo 
+global global_umbralVariacion 
+
 % PARAMETRIZAR
-global_RPMmax = 1500;       % RPM maximo
-global_constM = 17.067;     % Pendiente de la recta
-global_constC = 118.33;    % Desplazamiento
-global_alpha = 0.2;         % Filtro
-global_beta = 0.9855;       % Filtro
+global_RPMmax = 1500;           % RPM maximo
+global_constM = 17.067;         % Pendiente de la recta
+global_constC = 118.33;         % Desplazamiento
+global_alpha = 0.2;             % Filtro
+global_beta = 0.9855;           % Filtro
+global_intervalo = 5            % Intervalo de tiempo en segundos
+global_umbralVariacion = 0.02   % Variacion maxima permitida
 
 color_default   = [0.94, 0.94, 0.94];
 color_activo    = [0.5, 1, 0.5];
@@ -571,6 +576,7 @@ global global_motorState
 global global_stpointValue
 global global_timer
 global global_s
+global global_timerControl
 
 global color_default
 global color_activo
@@ -596,6 +602,14 @@ if ~isempty(global_s) && isvalid(global_s)
         delete(global_timer);
         global_timer = [];
         disp('Temporizador global_timer detenido y eliminado.');
+    end
+
+    % Detener y eliminar el temporizador global_timerControl si existe
+    if ~isempty(global_timerControl) && isvalid(global_timerControl)
+        stop(global_timerControl);
+        delete(global_timerControl);
+        global_timerControl = [];
+        disp('Temporizador global_timerControl detenido y eliminado.');
     end
 end
 
@@ -753,11 +767,11 @@ global color_activo
 global color_inactivo
 
 % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
-intervalo = 10; % Intervalo de tiempo en segundos
-umbralVariacion = 0.02; % Variacion maxima permitida (2%)
+global global_intervalo % Intervalo de tiempo en segundos
+global global_umbralVariacion % Variacion maxima permitida
 
 % Encontrar las muestras dentro del intervalo de tiempo
-indicesRecientes = find(global_tiemposTranscurridos >= (tiempoTranscurrido - intervalo));
+indicesRecientes = find(global_tiemposTranscurridos >= (tiempoTranscurrido - global_intervalo));
 
 if ~isempty(indicesRecientes)
     magnitudesRecientes = global_magnitudes(indicesRecientes);
@@ -765,7 +779,7 @@ if ~isempty(indicesRecientes)
     magnitudMinima = min(magnitudesRecientes);
     variacion = (magnitudMaxima - magnitudMinima) / magnitudMaxima;
 
-    if variacion <= umbralVariacion
+    if variacion <= global_umbralVariacion
         disp('Se ha alcanzado el establecimiento del sistema.');
         set(handles.button_stop, 'BackgroundColor', color_default);
         valorFinalPromedio = mean(magnitudesRecientes);
@@ -839,6 +853,14 @@ if ~isempty(indicesRecientes)
             if isfield(handles, 'timer') && isvalid(handles.timer)
                 stop(handles.timer);
                 delete(handles.timer);
+            end
+            
+            % Detener y eliminar el temporizador global_timer si existe
+            if ~isempty(global_timer) && isvalid(global_timer)
+                stop(global_timer);
+                delete(global_timer);
+                global_timer = [];
+                disp('Temporizador global_timer detenido y eliminado.');
             end
             
             % Cambiar el estado a 2 (control)
