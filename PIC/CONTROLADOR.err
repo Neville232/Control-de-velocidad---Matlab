@@ -1,5 +1,5 @@
-Compiling C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\CONTROLADOR on 05-mar.-25 at 23:19
->>> Warning 216 "C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\CONTROLADOR.c" Line 127(1,2): Interrupts disabled during call to prevent re-entrancy:  (@MULFF)
+Compiling C:\Users\PC2\Documents\0 - Control de velocidad 14-03-2025\Control-de-velocidad---Matlab-main-14-03-2025\Control-de-velocidad---Matlab-main\PIC\CONTROLADOR on 30-Mar-24 at 20:15
+>>> Warning 216 "CONTROLADOR.c" Line 136(1,2): Interrupts disabled during call to prevent re-entrancy:  (@MULFF)
       Memory usage:   ROM=10%      RAM=3% - 6%
       0 Errors,  1 Warnings.
 Build Successful.

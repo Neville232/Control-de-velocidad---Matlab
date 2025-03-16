@@ -1,16 +1,16 @@
-CCS PCH C Compiler, Version 5.115, 29001               05-mar.-25 23:19
+CCS PCH C Compiler, Version 5.080, 13314               30-Mar-24 20:15
 
-               Filename:   C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\CONTROLADOR.lst
+               Filename:   C:\Users\PC2\Documents\0 - Control de velocidad 14-03-2025\Control-de-velocidad---Matlab-main-14-03-2025\Control-de-velocidad---Matlab-main\PIC\CONTROLADOR.lst
 
-               ROM used:   3386 bytes (10%)
-                           Largest free fragment is 29378
+               ROM used:   3384 bytes (10%)
+                           Largest free fragment is 29380
                RAM used:   68 (3%) at main() level
                            116 (6%) worst case
-               Stack used: 4 locations (2 in main + 2 for interrupts)
+               Stack used: 3 locations (1 in main + 2 for interrupts)
                Stack size: 31
 
 *
-0000:  GOTO   0BD4
+0000:  GOTO   0BD2
 *
 0008:  MOVWF  04
 000A:  MOVFF  FD8,05
@@ -43,7 +43,7 @@ CCS PCH C Compiler, Version 5.115, 29001               05-mar.-25 23:19
 006C:  BTFSS  F9D.5
 006E:  GOTO   0078
 0072:  BTFSC  F9E.5
-0074:  GOTO   08E8
+0074:  GOTO   08E6
 0078:  MOVFF  0E,00
 007C:  MOVFF  0F,01
 0080:  MOVFF  10,02
@@ -65,18 +65,18 @@ CCS PCH C Compiler, Version 5.115, 29001               05-mar.-25 23:19
 00BC:  MOVFF  06,FE0
 00C0:  MOVFF  05,FD8
 00C4:  RETFIE 0
-.................... #include <18F45K50.h>
-.................... //////////// Standard Header file for the PIC18F45K50 device ////////////////
-.................... ///////////////////////////////////////////////////////////////////////////
-.................... ////        (C) Copyright 1996, 2020 Custom Computer Services          ////
-.................... //// This source code may only be used by licensed users of the CCS C  ////
-.................... //// compiler.  This source code may only be distributed to other      ////
-.................... //// licensed users of the CCS C compiler.  No other use, reproduction ////
-.................... //// or distribution is permitted without written permission.          ////
-.................... //// Derivative programs created using this software in object code    ////
-.................... //// form are not restricted in any way.                               ////
-.................... ///////////////////////////////////////////////////////////////////////////
-.................... #device PIC18F45K50
+.................... #include <18F45K50.h> 
+.................... //////////// Standard Header file for the PIC18F45K50 device //////////////// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... ////        (C) Copyright 1996, 2014 Custom Computer Services          //// 
+.................... //// This source code may only be used by licensed users of the CCS C  //// 
+.................... //// compiler.  This source code may only be distributed to other      //// 
+.................... //// licensed users of the CCS C compiler.  No other use, reproduction //// 
+.................... //// or distribution is permitted without written permission.          //// 
+.................... //// Derivative programs created using this software in object code    //// 
+.................... //// form are not restricted in any way.                               //// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... #device PIC18F45K50 
 00C6:  CLRF   FF7
 00C8:  ADDLW  D6
 00CA:  MOVWF  FF6
@@ -495,7 +495,7 @@ CCS PCH C Compiler, Version 5.115, 29001               05-mar.-25 23:19
 0422:  CLRF   01
 0424:  CLRF   02
 0426:  CLRF   03
-0428:  GOTO   0782 (RETURN)
+0428:  GOTO   0780 (RETURN)
 042C:  MOVFF  5D,64
 0430:  MOVF   x61,W
 0432:  XORWF  x64,F
@@ -548,7 +548,7 @@ CCS PCH C Compiler, Version 5.115, 29001               05-mar.-25 23:19
 049A:  MOVWF  FD8
 049C:  BRA    04A0
 049E:  BCF    FD8.0
-04A0:  GOTO   07AE (RETURN)
+04A0:  GOTO   07AC (RETURN)
 04A4:  MOVLW  80
 04A6:  BTFSC  FD8.1
 04A8:  XORWF  x69,F
@@ -831,779 +831,787 @@ CCS PCH C Compiler, Version 5.115, 29001               05-mar.-25 23:19
 070A:  BRA    05F4
 070C:  RETURN 0
 *
-091C:  DATA 25,2E
-091E:  DATA 32,66
-0920:  DATA 20,2D
-0922:  DATA 0A,00
+091A:  DATA 25,2E
+091C:  DATA 32,66
+091E:  DATA 20,2D
+0920:  DATA 0A,00
 *
-0954:  MOVF   4F,W
-0956:  SUBLW  B6
-0958:  MOVWF  4F
-095A:  CLRF   03
-095C:  MOVFF  50,53
-0960:  BSF    50.7
-0962:  BCF    FD8.0
-0964:  RRCF   50,F
-0966:  RRCF   51,F
-0968:  RRCF   52,F
-096A:  RRCF   03,F
-096C:  RRCF   02,F
-096E:  RRCF   01,F
-0970:  RRCF   00,F
-0972:  DECFSZ 4F,F
-0974:  BRA    0962
-0976:  BTFSS  53.7
-0978:  BRA    0990
-097A:  COMF   00,F
-097C:  COMF   01,F
-097E:  COMF   02,F
-0980:  COMF   03,F
-0982:  INCF   00,F
-0984:  BTFSC  FD8.2
-0986:  INCF   01,F
-0988:  BTFSC  FD8.2
-098A:  INCF   02,F
-098C:  BTFSC  FD8.2
-098E:  INCF   03,F
-0990:  GOTO   0A7E (RETURN)
-0994:  BTFSC  FD8.1
-0996:  BRA    099E
-0998:  CLRF   FEA
-099A:  MOVLW  57
-099C:  MOVWF  FE9
-099E:  CLRF   00
-09A0:  CLRF   01
-09A2:  CLRF   02
-09A4:  CLRF   03
-09A6:  CLRF   57
-09A8:  CLRF   58
-09AA:  CLRF   59
-09AC:  CLRF   5A
-09AE:  MOVF   56,W
-09B0:  IORWF  55,W
-09B2:  IORWF  54,W
-09B4:  IORWF  53,W
-09B6:  BZ    0A10
-09B8:  MOVLW  20
-09BA:  MOVWF  5B
-09BC:  BCF    FD8.0
-09BE:  RLCF   4F,F
-09C0:  RLCF   50,F
-09C2:  RLCF   51,F
-09C4:  RLCF   52,F
-09C6:  RLCF   57,F
-09C8:  RLCF   58,F
-09CA:  RLCF   59,F
-09CC:  RLCF   5A,F
-09CE:  MOVF   56,W
-09D0:  SUBWF  5A,W
-09D2:  BNZ   09E4
-09D4:  MOVF   55,W
-09D6:  SUBWF  59,W
-09D8:  BNZ   09E4
-09DA:  MOVF   54,W
-09DC:  SUBWF  58,W
-09DE:  BNZ   09E4
-09E0:  MOVF   53,W
-09E2:  SUBWF  57,W
-09E4:  BNC   0A04
-09E6:  MOVF   53,W
-09E8:  SUBWF  57,F
-09EA:  MOVF   54,W
-09EC:  BTFSS  FD8.0
-09EE:  INCFSZ 54,W
-09F0:  SUBWF  58,F
-09F2:  MOVF   55,W
-09F4:  BTFSS  FD8.0
-09F6:  INCFSZ 55,W
-09F8:  SUBWF  59,F
-09FA:  MOVF   56,W
-09FC:  BTFSS  FD8.0
-09FE:  INCFSZ 56,W
-0A00:  SUBWF  5A,F
-0A02:  BSF    FD8.0
-0A04:  RLCF   00,F
-0A06:  RLCF   01,F
-0A08:  RLCF   02,F
-0A0A:  RLCF   03,F
-0A0C:  DECFSZ 5B,F
-0A0E:  BRA    09BC
-0A10:  MOVFF  57,FEF
-0A14:  MOVFF  58,FEC
-0A18:  MOVFF  59,FEC
-0A1C:  MOVFF  5A,FEC
-0A20:  RETURN 0
-0A22:  MOVF   FE9,W
-0A24:  MOVWF  47
-0A26:  MOVF   46,W
-0A28:  MOVWF  49
-0A2A:  BZ    0A6C
-0A2C:  CLRF   19
-0A2E:  BTFSC  FF2.7
-0A30:  BSF    19.7
-0A32:  BCF    FF2.7
-0A34:  MOVFF  45,6B
-0A38:  MOVFF  44,6A
-0A3C:  MOVFF  43,69
-0A40:  MOVFF  42,68
-0A44:  CLRF   x6F
-0A46:  CLRF   x6E
-0A48:  MOVLW  20
-0A4A:  MOVWF  x6D
-0A4C:  MOVLW  82
-0A4E:  MOVWF  x6C
-0A50:  CALL   01DE
-0A54:  BTFSC  19.7
-0A56:  BSF    FF2.7
-0A58:  MOVFF  03,45
-0A5C:  MOVFF  02,44
-0A60:  MOVFF  01,43
-0A64:  MOVFF  00,42
-0A68:  DECFSZ 49,F
-0A6A:  BRA    0A2C
-0A6C:  MOVFF  45,52
-0A70:  MOVFF  44,51
-0A74:  MOVFF  43,50
-0A78:  MOVFF  42,4F
-0A7C:  BRA    0954
-0A7E:  MOVFF  03,45
-0A82:  MOVFF  02,44
-0A86:  MOVFF  01,43
-0A8A:  MOVFF  00,42
-0A8E:  BTFSS  45.7
-0A90:  BRA    0AAC
-0A92:  DECF   47,F
-0A94:  BSF    47.5
-0A96:  COMF   42,F
-0A98:  COMF   43,F
-0A9A:  COMF   44,F
-0A9C:  COMF   45,F
-0A9E:  INCF   42,F
-0AA0:  BTFSC  FD8.2
-0AA2:  INCF   43,F
-0AA4:  BTFSC  FD8.2
-0AA6:  INCF   44,F
-0AA8:  BTFSC  FD8.2
-0AAA:  INCF   45,F
-0AAC:  MOVLW  3B
-0AAE:  MOVWF  4E
-0AB0:  MOVLW  9A
-0AB2:  MOVWF  4D
-0AB4:  MOVLW  CA
-0AB6:  MOVWF  4C
-0AB8:  CLRF   4B
-0ABA:  MOVLW  0A
-0ABC:  MOVWF  49
-0ABE:  MOVF   46,W
-0AC0:  BTFSC  FD8.2
-0AC2:  INCF   47,F
-0AC4:  BSF    FD8.1
-0AC6:  CLRF   FEA
-0AC8:  MOVLW  42
-0ACA:  MOVWF  FE9
-0ACC:  MOVFF  45,52
-0AD0:  MOVFF  44,51
-0AD4:  MOVFF  43,50
-0AD8:  MOVFF  42,4F
-0ADC:  MOVFF  4E,56
-0AE0:  MOVFF  4D,55
-0AE4:  MOVFF  4C,54
-0AE8:  MOVFF  4B,53
-0AEC:  RCALL  0994
-0AEE:  MOVF   01,W
-0AF0:  MOVF   00,F
-0AF2:  BNZ   0B12
-0AF4:  INCF   46,W
-0AF6:  SUBWF  49,W
-0AF8:  BZ    0B12
-0AFA:  MOVF   47,W
-0AFC:  BZ    0B16
-0AFE:  ANDLW  0F
-0B00:  SUBWF  49,W
-0B02:  BZ    0B06
-0B04:  BC    0B7C
-0B06:  BTFSC  47.7
-0B08:  BRA    0B7C
-0B0A:  BTFSC  47.6
-0B0C:  BRA    0B16
-0B0E:  MOVLW  20
-0B10:  BRA    0B72
-0B12:  MOVLW  20
-0B14:  ANDWF  47,F
-0B16:  BTFSS  47.5
-0B18:  BRA    0B34
-0B1A:  BCF    47.5
-0B1C:  MOVF   46,W
-0B1E:  BTFSS  FD8.2
-0B20:  DECF   47,F
-0B22:  MOVF   00,W
-0B24:  MOVWF  47
-0B26:  MOVLW  2D
-0B28:  BTFSS  F9E.4
-0B2A:  BRA    0B28
-0B2C:  MOVWF  FAD
-0B2E:  MOVF   47,W
-0B30:  MOVWF  00
-0B32:  CLRF   47
-0B34:  MOVF   46,W
-0B36:  SUBWF  49,W
-0B38:  BNZ   0B50
-0B3A:  MOVF   00,W
-0B3C:  MOVWF  47
-0B3E:  MOVLW  2E
-0B40:  BTFSS  F9E.4
-0B42:  BRA    0B40
-0B44:  MOVWF  FAD
-0B46:  MOVF   47,W
-0B48:  MOVWF  00
-0B4A:  MOVLW  20
-0B4C:  ANDWF  47,F
-0B4E:  MOVLW  00
-0B50:  MOVLW  30
-0B52:  BTFSS  47.5
-0B54:  BRA    0B72
-0B56:  BCF    47.5
-0B58:  MOVF   46,W
-0B5A:  BTFSS  FD8.2
-0B5C:  DECF   47,F
-0B5E:  MOVF   00,W
-0B60:  MOVWF  47
-0B62:  MOVLW  2D
-0B64:  BTFSS  F9E.4
-0B66:  BRA    0B64
-0B68:  MOVWF  FAD
-0B6A:  MOVF   47,W
-0B6C:  MOVWF  00
-0B6E:  CLRF   47
-0B70:  MOVLW  30
-0B72:  ADDWF  00,F
-0B74:  MOVF   00,W
-0B76:  BTFSS  F9E.4
-0B78:  BRA    0B76
-0B7A:  MOVWF  FAD
-0B7C:  BCF    FD8.1
-0B7E:  MOVFF  4E,52
-0B82:  MOVFF  4D,51
-0B86:  MOVFF  4C,50
-0B8A:  MOVFF  4B,4F
-0B8E:  CLRF   56
-0B90:  CLRF   55
-0B92:  CLRF   54
-0B94:  MOVLW  0A
-0B96:  MOVWF  53
-0B98:  RCALL  0994
-0B9A:  MOVFF  03,4E
-0B9E:  MOVFF  02,4D
-0BA2:  MOVFF  01,4C
-0BA6:  MOVFF  00,4B
-0BAA:  DECFSZ 49,F
-0BAC:  BRA    0AC4
-0BAE:  GOTO   0D2C (RETURN)
-0BB2:  TBLRD*+
-0BB4:  MOVFF  FF6,43
-0BB8:  MOVFF  FF7,44
-0BBC:  MOVF   FF5,W
-0BBE:  BTFSS  F9E.4
-0BC0:  BRA    0BBE
-0BC2:  MOVWF  FAD
-0BC4:  MOVFF  43,FF6
-0BC8:  MOVFF  44,FF7
-0BCC:  DECFSZ 42,F
-0BCE:  BRA    0BB2
-0BD0:  GOTO   0D3A (RETURN)
-.................... 
-.................... #list
-.................... 
-.................... 
-.................... #use delay(internal=4MHz)
-.................... #fuses XT, NOWDT, NOPLLEN, NOLVP
-.................... #use rs232(baud=9600, xmit=PIN_C6, rcv=PIN_C7, stream=PC, parity=N, bits=8)
-.................... 
-.................... //==================== VARIABLES GLOBALES ====================
-.................... 
-.................... int timer2 = 88;                // Se carga timer 2 con 88 para obtener 700 Hz
-.................... int poscaler = 1;               // Poscaler solo puede tomar valores de: 1
-.................... volatile int int_encoder = 0;   // Contador del encoder
-.................... volatile int count = 0;         // Contador para el Timer0
-.................... int resolucion = 8;             // Resolucion del encoder (8 pulsos por vuelta)
-.................... 
-.................... int duty = 0;                  // Ciclo de trabajo inicial 
-.................... int estado = 0;                 // Motor encendido o apagado
-.................... 
-.................... const int16 duty_porcentual[101] = {
-....................     0, 3, 7, 10, 14, 17, 21, 24, 28, 32, 35, 39, 42, 46, 49, 53, 56, 60, 64, 67, 71, 74, 78, 81, 85, 89, 92, 96, 99, 103, 106, 110, 113, 117, 121, 124, 128, 131, 135, 138, 142, 145, 149, 153, 156, 160, 163, 167, 170, 174, 178, 181, 185, 188, 192, 195, 199, 202, 206, 210, 213, 217, 220, 224, 227, 231, 234, 238, 242, 245, 249, 252, 256, 259, 263, 267, 270, 274, 277, 281, 284, 288, 291, 295, 299, 302, 306, 309, 313, 316, 320, 323, 327, 331, 334, 338, 341, 345, 348, 352, 356
-.................... };
-.................... 
-.................... /*const int16 duty_porcentual[11] = {
-....................     0, 36, 72, 108, 144, 180, 216, 252, 288, 324, 356
-.................... };*/
-.................... 
-.................... float rpm_actual = 0.0;         // Almacena el valor actual de RPM
-.................... float rpm_anterior = 0.0;       // Almacena el valor anterior de RPM
-.................... float rpm = 0.0;                // Almacena el valor filtrado de RPM
-.................... float alpha = 0.8;              // Coeficiente de filtro exponencial
-.................... float beta = 0.0;               // Ajuste del error
-.................... 
-.................... char buffer[10];                // Buffer para la trama
-.................... volatile int i = 0;
-.................... volatile int datos_listos = 0;
-.................... volatile int rpm_listo = 0;     // Bandera que indica que el RPM fue actualizado
-.................... 
-.................... //==================== INTERRUPCIONES ====================
-.................... 
-.................... #INT_EXT                            // Interrupción externa (pulsos del encoder)
-.................... void EXT_isr(){
-....................     int_encoder++;                  // Incrementa contador del encoder
+0952:  MOVF   4F,W
+0954:  SUBLW  B6
+0956:  MOVWF  4F
+0958:  CLRF   03
+095A:  MOVFF  50,53
+095E:  BSF    50.7
+0960:  BCF    FD8.0
+0962:  RRCF   50,F
+0964:  RRCF   51,F
+0966:  RRCF   52,F
+0968:  RRCF   03,F
+096A:  RRCF   02,F
+096C:  RRCF   01,F
+096E:  RRCF   00,F
+0970:  DECFSZ 4F,F
+0972:  BRA    0960
+0974:  BTFSS  53.7
+0976:  BRA    098E
+0978:  COMF   00,F
+097A:  COMF   01,F
+097C:  COMF   02,F
+097E:  COMF   03,F
+0980:  INCF   00,F
+0982:  BTFSC  FD8.2
+0984:  INCF   01,F
+0986:  BTFSC  FD8.2
+0988:  INCF   02,F
+098A:  BTFSC  FD8.2
+098C:  INCF   03,F
+098E:  GOTO   0A7C (RETURN)
+0992:  BTFSC  FD8.1
+0994:  BRA    099C
+0996:  CLRF   FEA
+0998:  MOVLW  57
+099A:  MOVWF  FE9
+099C:  CLRF   00
+099E:  CLRF   01
+09A0:  CLRF   02
+09A2:  CLRF   03
+09A4:  CLRF   57
+09A6:  CLRF   58
+09A8:  CLRF   59
+09AA:  CLRF   5A
+09AC:  MOVF   56,W
+09AE:  IORWF  55,W
+09B0:  IORWF  54,W
+09B2:  IORWF  53,W
+09B4:  BZ    0A0E
+09B6:  MOVLW  20
+09B8:  MOVWF  5B
+09BA:  BCF    FD8.0
+09BC:  RLCF   4F,F
+09BE:  RLCF   50,F
+09C0:  RLCF   51,F
+09C2:  RLCF   52,F
+09C4:  RLCF   57,F
+09C6:  RLCF   58,F
+09C8:  RLCF   59,F
+09CA:  RLCF   5A,F
+09CC:  MOVF   56,W
+09CE:  SUBWF  5A,W
+09D0:  BNZ   09E2
+09D2:  MOVF   55,W
+09D4:  SUBWF  59,W
+09D6:  BNZ   09E2
+09D8:  MOVF   54,W
+09DA:  SUBWF  58,W
+09DC:  BNZ   09E2
+09DE:  MOVF   53,W
+09E0:  SUBWF  57,W
+09E2:  BNC   0A02
+09E4:  MOVF   53,W
+09E6:  SUBWF  57,F
+09E8:  MOVF   54,W
+09EA:  BTFSS  FD8.0
+09EC:  INCFSZ 54,W
+09EE:  SUBWF  58,F
+09F0:  MOVF   55,W
+09F2:  BTFSS  FD8.0
+09F4:  INCFSZ 55,W
+09F6:  SUBWF  59,F
+09F8:  MOVF   56,W
+09FA:  BTFSS  FD8.0
+09FC:  INCFSZ 56,W
+09FE:  SUBWF  5A,F
+0A00:  BSF    FD8.0
+0A02:  RLCF   00,F
+0A04:  RLCF   01,F
+0A06:  RLCF   02,F
+0A08:  RLCF   03,F
+0A0A:  DECFSZ 5B,F
+0A0C:  BRA    09BA
+0A0E:  MOVFF  57,FEF
+0A12:  MOVFF  58,FEC
+0A16:  MOVFF  59,FEC
+0A1A:  MOVFF  5A,FEC
+0A1E:  RETURN 0
+0A20:  MOVF   FE9,W
+0A22:  MOVWF  47
+0A24:  MOVF   46,W
+0A26:  MOVWF  49
+0A28:  BZ    0A6A
+0A2A:  CLRF   19
+0A2C:  BTFSC  FF2.7
+0A2E:  BSF    19.7
+0A30:  BCF    FF2.7
+0A32:  MOVFF  45,6B
+0A36:  MOVFF  44,6A
+0A3A:  MOVFF  43,69
+0A3E:  MOVFF  42,68
+0A42:  CLRF   x6F
+0A44:  CLRF   x6E
+0A46:  MOVLW  20
+0A48:  MOVWF  x6D
+0A4A:  MOVLW  82
+0A4C:  MOVWF  x6C
+0A4E:  CALL   01DE
+0A52:  BTFSC  19.7
+0A54:  BSF    FF2.7
+0A56:  MOVFF  03,45
+0A5A:  MOVFF  02,44
+0A5E:  MOVFF  01,43
+0A62:  MOVFF  00,42
+0A66:  DECFSZ 49,F
+0A68:  BRA    0A2A
+0A6A:  MOVFF  45,52
+0A6E:  MOVFF  44,51
+0A72:  MOVFF  43,50
+0A76:  MOVFF  42,4F
+0A7A:  BRA    0952
+0A7C:  MOVFF  03,45
+0A80:  MOVFF  02,44
+0A84:  MOVFF  01,43
+0A88:  MOVFF  00,42
+0A8C:  BTFSS  45.7
+0A8E:  BRA    0AAA
+0A90:  DECF   47,F
+0A92:  BSF    47.5
+0A94:  COMF   42,F
+0A96:  COMF   43,F
+0A98:  COMF   44,F
+0A9A:  COMF   45,F
+0A9C:  INCF   42,F
+0A9E:  BTFSC  FD8.2
+0AA0:  INCF   43,F
+0AA2:  BTFSC  FD8.2
+0AA4:  INCF   44,F
+0AA6:  BTFSC  FD8.2
+0AA8:  INCF   45,F
+0AAA:  MOVLW  3B
+0AAC:  MOVWF  4E
+0AAE:  MOVLW  9A
+0AB0:  MOVWF  4D
+0AB2:  MOVLW  CA
+0AB4:  MOVWF  4C
+0AB6:  CLRF   4B
+0AB8:  MOVLW  0A
+0ABA:  MOVWF  49
+0ABC:  MOVF   46,W
+0ABE:  BTFSC  FD8.2
+0AC0:  INCF   47,F
+0AC2:  BSF    FD8.1
+0AC4:  CLRF   FEA
+0AC6:  MOVLW  42
+0AC8:  MOVWF  FE9
+0ACA:  MOVFF  45,52
+0ACE:  MOVFF  44,51
+0AD2:  MOVFF  43,50
+0AD6:  MOVFF  42,4F
+0ADA:  MOVFF  4E,56
+0ADE:  MOVFF  4D,55
+0AE2:  MOVFF  4C,54
+0AE6:  MOVFF  4B,53
+0AEA:  RCALL  0992
+0AEC:  MOVF   01,W
+0AEE:  MOVF   00,F
+0AF0:  BNZ   0B10
+0AF2:  INCF   46,W
+0AF4:  SUBWF  49,W
+0AF6:  BZ    0B10
+0AF8:  MOVF   47,W
+0AFA:  BZ    0B14
+0AFC:  ANDLW  0F
+0AFE:  SUBWF  49,W
+0B00:  BZ    0B04
+0B02:  BC    0B7A
+0B04:  BTFSC  47.7
+0B06:  BRA    0B7A
+0B08:  BTFSC  47.6
+0B0A:  BRA    0B14
+0B0C:  MOVLW  20
+0B0E:  BRA    0B70
+0B10:  MOVLW  20
+0B12:  ANDWF  47,F
+0B14:  BTFSS  47.5
+0B16:  BRA    0B32
+0B18:  BCF    47.5
+0B1A:  MOVF   46,W
+0B1C:  BTFSS  FD8.2
+0B1E:  DECF   47,F
+0B20:  MOVF   00,W
+0B22:  MOVWF  47
+0B24:  MOVLW  2D
+0B26:  BTFSS  F9E.4
+0B28:  BRA    0B26
+0B2A:  MOVWF  FAD
+0B2C:  MOVF   47,W
+0B2E:  MOVWF  00
+0B30:  CLRF   47
+0B32:  MOVF   46,W
+0B34:  SUBWF  49,W
+0B36:  BNZ   0B4E
+0B38:  MOVF   00,W
+0B3A:  MOVWF  47
+0B3C:  MOVLW  2E
+0B3E:  BTFSS  F9E.4
+0B40:  BRA    0B3E
+0B42:  MOVWF  FAD
+0B44:  MOVF   47,W
+0B46:  MOVWF  00
+0B48:  MOVLW  20
+0B4A:  ANDWF  47,F
+0B4C:  MOVLW  00
+0B4E:  MOVLW  30
+0B50:  BTFSS  47.5
+0B52:  BRA    0B70
+0B54:  BCF    47.5
+0B56:  MOVF   46,W
+0B58:  BTFSS  FD8.2
+0B5A:  DECF   47,F
+0B5C:  MOVF   00,W
+0B5E:  MOVWF  47
+0B60:  MOVLW  2D
+0B62:  BTFSS  F9E.4
+0B64:  BRA    0B62
+0B66:  MOVWF  FAD
+0B68:  MOVF   47,W
+0B6A:  MOVWF  00
+0B6C:  CLRF   47
+0B6E:  MOVLW  30
+0B70:  ADDWF  00,F
+0B72:  MOVF   00,W
+0B74:  BTFSS  F9E.4
+0B76:  BRA    0B74
+0B78:  MOVWF  FAD
+0B7A:  BCF    FD8.1
+0B7C:  MOVFF  4E,52
+0B80:  MOVFF  4D,51
+0B84:  MOVFF  4C,50
+0B88:  MOVFF  4B,4F
+0B8C:  CLRF   56
+0B8E:  CLRF   55
+0B90:  CLRF   54
+0B92:  MOVLW  0A
+0B94:  MOVWF  53
+0B96:  RCALL  0992
+0B98:  MOVFF  03,4E
+0B9C:  MOVFF  02,4D
+0BA0:  MOVFF  01,4C
+0BA4:  MOVFF  00,4B
+0BA8:  DECFSZ 49,F
+0BAA:  BRA    0AC2
+0BAC:  GOTO   0D2A (RETURN)
+0BB0:  TBLRD*+
+0BB2:  MOVFF  FF6,43
+0BB6:  MOVFF  FF7,44
+0BBA:  MOVF   FF5,W
+0BBC:  BTFSS  F9E.4
+0BBE:  BRA    0BBC
+0BC0:  MOVWF  FAD
+0BC2:  MOVFF  43,FF6
+0BC6:  MOVFF  44,FF7
+0BCA:  DECFSZ 42,F
+0BCC:  BRA    0BB0
+0BCE:  GOTO   0D38 (RETURN)
+....................  
+.................... #list 
+....................  
+....................  
+.................... #use delay(internal=4MHz) 
+.................... #fuses XT, NOWDT, NOPLLEN, NOLVP 
+.................... #use rs232(baud=9600, xmit=PIN_C6, rcv=PIN_C7, stream=PC, parity=N, bits=8) 
+....................  
+.................... //==================== VARIABLES GLOBALES ==================== 
+....................  
+.................... int timer2 = 88;                // Se carga timer 2 con 88 para obtener 700 Hz 
+.................... int poscaler = 1;               // Poscaler solo puede tomar valores de: 1 
+.................... volatile int int_encoder = 0;   // Contador del encoder 
+.................... volatile int count = 0;         // Contador para el Timer0 
+.................... int resolucion = 8;             // Resolucion del encoder (8 pulsos por vuelta) 
+....................  
+.................... int duty = 0;                  // Ciclo de trabajo inicial  
+.................... int estado = 0;                 // Motor encendido o apagado 
+....................  
+.................... const int16 duty_porcentual[101] = { 
+....................     0, 3, 7, 10, 14, 17, 21, 24, 28, 32, 35,  
+....................     39, 42, 46, 49, 53, 56, 60, 64, 67, 71,  
+....................     74, 78, 81, 85, 89, 92, 96, 99, 103, 106,  
+....................     110, 113, 117, 121, 124, 128, 131, 135, 138, 142,  
+....................     145, 149, 153, 156, 160, 163, 167, 170, 174, 178,  
+....................     181, 185, 188, 192, 195, 199, 202, 206, 210, 213,  
+....................     217, 220, 224, 227, 231, 234, 238, 242, 245, 249,  
+....................     252, 256, 259, 263, 267, 270, 274, 277, 281, 284,  
+....................     288, 291, 295, 299, 302, 306, 309, 313, 316, 320,  
+....................     323, 327, 331, 334, 338, 341, 345, 348, 352, 356 
+.................... }; 
+....................  
+.................... /*const int16 duty_porcentual[11] = { 
+....................     0, 36, 72, 108, 144, 180, 216, 252, 288, 324, 356 
+.................... };*/ 
+....................  
+.................... float rpm_actual = 0.0;         // Almacena el valor actual de RPM 
+.................... float rpm_anterior = 0.0;       // Almacena el valor anterior de RPM 
+.................... float rpm = 0.0;                // Almacena el valor filtrado de RPM 
+.................... float alpha = 0.8;              // Coeficiente de filtro exponencial 
+.................... float beta = 0.0;               // Ajuste del error 
+....................  
+.................... char buffer[10];                // Buffer para la trama 
+.................... volatile int i = 0; 
+.................... volatile int datos_listos = 0; 
+.................... volatile int rpm_listo = 0;     // Bandera que indica que el RPM fue actualizado 
+....................  
+.................... //==================== INTERRUPCIONES ==================== 
+....................  
+.................... #INT_EXT                            // Interrupción externa (pulsos del encoder) 
+.................... void EXT_isr(){ 
+....................     int_encoder++;                  // Incrementa contador del encoder 
 *
 01A0:  INCF   1C,F
-.................... }
-.................... 
+.................... } 
+....................  
 01A2:  BCF    FF2.1
 01A4:  GOTO   0078
-.................... #INT_TIMER0                         // Interrupción del Timer0 (cálculo de RPM)
-.................... void TIMER0_isr(){
-....................     set_timer0(6);                  // Precarga ajustada para 64 ms por interrupción
+.................... #INT_TIMER0                         // Interrupción del Timer0 (cálculo de RPM) 
+.................... void TIMER0_isr(){ 
+....................     set_timer0(6);                  // Precarga ajustada para 64 ms por interrupción 
 *
 070E:  CLRF   FD7
 0710:  MOVLW  06
 0712:  MOVWF  FD6
-0714:  NOP   
-....................     count++;                        // Incrementar el contador
-0716:  INCF   1D,F
-.................... 
-....................     if (count >= 4) {               // 256 ms
-0718:  MOVF   1D,W
-071A:  SUBLW  03
-071C:  BTFSC  FD8.0
-071E:  BRA    08E2
-....................         count = 0;                // Reinicia el contador
-0720:  CLRF   1D
-.................... 
-....................         rpm_actual = (int_encoder * 240.0) / resolucion; // Calcula RPM (60 * 4)
-0722:  CLRF   x61
-0724:  MOVFF  1C,60
-0728:  RCALL  01A8
-072A:  MOVFF  03,6B
-072E:  MOVFF  02,6A
-0732:  MOVFF  01,69
-0736:  MOVFF  00,68
-073A:  CLRF   x6F
-073C:  CLRF   x6E
-073E:  MOVLW  70
-0740:  MOVWF  x6D
-0742:  MOVLW  86
-0744:  MOVWF  x6C
-0746:  RCALL  01DE
-0748:  MOVFF  03,5F
-074C:  MOVFF  02,5E
-0750:  MOVFF  01,5D
-0754:  MOVFF  00,5C
-0758:  CLRF   x61
-075A:  MOVFF  1E,60
-075E:  RCALL  01A8
-0760:  MOVFF  5F,63
-0764:  MOVFF  5E,62
-0768:  MOVFF  5D,61
-076C:  MOVFF  5C,60
-0770:  MOVFF  03,67
-0774:  MOVFF  02,66
-0778:  MOVFF  01,65
-077C:  MOVFF  00,64
-0780:  BRA    02D0
-0782:  MOVFF  03,24
-0786:  MOVFF  02,23
-078A:  MOVFF  01,22
-078E:  MOVFF  00,21
-....................         int_encoder = 0;          // Reinicia contador del encoder
-0792:  CLRF   1C
-.................... 
-....................         if (rpm_anterior != 0) {  // Aplicar el filtro exponencial
-0794:  MOVFF  28,5F
-0798:  MOVFF  27,5E
-079C:  MOVFF  26,5D
-07A0:  MOVFF  25,5C
-07A4:  CLRF   x63
-07A6:  CLRF   x62
-07A8:  CLRF   x61
-07AA:  CLRF   x60
-07AC:  BRA    042C
-07AE:  BTFSC  FD8.2
-07B0:  BRA    08BA
-....................             rpm = (beta + 1) * (alpha * rpm_actual + ((1 - alpha) * rpm_anterior));
-07B2:  BCF    FD8.1
-07B4:  MOVFF  34,67
-07B8:  MOVFF  33,66
-07BC:  MOVFF  32,65
-07C0:  MOVFF  31,64
-07C4:  CLRF   x6B
-07C6:  CLRF   x6A
-07C8:  CLRF   x69
-07CA:  MOVLW  7F
-07CC:  MOVWF  x68
-07CE:  RCALL  04A4
-07D0:  MOVFF  03,5F
-07D4:  MOVFF  02,5E
-07D8:  MOVFF  01,5D
-07DC:  MOVFF  00,5C
-07E0:  MOVFF  30,6B
-07E4:  MOVFF  2F,6A
-07E8:  MOVFF  2E,69
-07EC:  MOVFF  2D,68
-07F0:  MOVFF  24,6F
-07F4:  MOVFF  23,6E
-07F8:  MOVFF  22,6D
-07FC:  MOVFF  21,6C
-0800:  RCALL  01DE
-0802:  MOVFF  03,63
-0806:  MOVFF  02,62
-080A:  MOVFF  01,61
-080E:  MOVFF  00,60
-0812:  BSF    FD8.1
-0814:  CLRF   x67
-0816:  CLRF   x66
-0818:  CLRF   x65
-081A:  MOVLW  7F
-081C:  MOVWF  x64
-081E:  MOVFF  30,6B
-0822:  MOVFF  2F,6A
-0826:  MOVFF  2E,69
-082A:  MOVFF  2D,68
-082E:  RCALL  04A4
-0830:  MOVFF  03,67
-0834:  MOVFF  02,66
-0838:  MOVFF  01,65
-083C:  MOVFF  00,64
-0840:  MOVFF  03,6B
-0844:  MOVFF  02,6A
-0848:  MOVFF  01,69
-084C:  MOVFF  00,68
-0850:  MOVFF  28,6F
-0854:  MOVFF  27,6E
-0858:  MOVFF  26,6D
-085C:  MOVFF  25,6C
-0860:  RCALL  01DE
-0862:  BCF    FD8.1
-0864:  MOVFF  63,67
-0868:  MOVFF  62,66
-086C:  MOVFF  61,65
-0870:  MOVFF  60,64
-0874:  MOVFF  03,6B
-0878:  MOVFF  02,6A
-087C:  MOVFF  01,69
-0880:  MOVFF  00,68
-0884:  RCALL  04A4
-0886:  MOVFF  5F,6B
-088A:  MOVFF  5E,6A
-088E:  MOVFF  5D,69
-0892:  MOVFF  5C,68
-0896:  MOVFF  03,6F
-089A:  MOVFF  02,6E
-089E:  MOVFF  01,6D
-08A2:  MOVFF  00,6C
-08A6:  RCALL  01DE
-08A8:  MOVFF  03,2C
-08AC:  MOVFF  02,2B
-08B0:  MOVFF  01,2A
-08B4:  MOVFF  00,29
-....................         } else {
-08B8:  BRA    08CA
-....................             rpm = rpm_actual;
-08BA:  MOVFF  24,2C
-08BE:  MOVFF  23,2B
-08C2:  MOVFF  22,2A
-08C6:  MOVFF  21,29
-....................         }
-....................         rpm_anterior = rpm;       // Actualiza rpm_anterior
-08CA:  MOVFF  2C,28
-08CE:  MOVFF  2B,27
-08D2:  MOVFF  2A,26
-08D6:  MOVFF  29,25
-.................... 
-....................         if (estado == 1) {        // Si el motor está encendido, notifica el nuevo RPM
-08DA:  DECFSZ 20,W
-08DC:  BRA    08E2
-....................             rpm_listo = 1;
-08DE:  MOVLW  01
-08E0:  MOVWF  41
-....................         }
-....................     }
-.................... }
-.................... 
-08E2:  BCF    FF2.2
-08E4:  GOTO   0078
-.................... #INT_RDA                            // Interrupción de recepción de datos seriales (RS232)
-.................... void RDA_isr() {
-08E8:  BTFSS  F9E.5
-08EA:  BRA    08E8
-08EC:  MOVFF  FAE,5C
-....................     char c = getc();
-....................     if (c == 0xFF) {                // Caracter de inicio
-08F0:  INCFSZ 5C,W
-08F2:  BRA    08F6
-....................         i = 0;                      // Reinicia el índice del buffer
-08F4:  CLRF   3F
-....................     }
-....................     buffer[i] = c;
-08F6:  CLRF   03
-08F8:  MOVF   3F,W
-08FA:  ADDLW  35
-08FC:  MOVWF  FE9
-08FE:  MOVLW  00
-0900:  ADDWFC 03,W
-0902:  MOVWF  FEA
-0904:  MOVFF  5C,FEF
-....................     i++;
-0908:  INCF   3F,F
-....................     if (i >= 3) {                   // Longitud de la trama de datos
-090A:  MOVF   3F,W
-090C:  SUBLW  02
-090E:  BC    0916
-....................         datos_listos = 1;
-0910:  MOVLW  01
-0912:  MOVWF  40
-....................         i = 0;                      // Reinicia el índice del buffer
-0914:  CLRF   3F
-....................     }
-0916:  BCF    F9E.5
-0918:  GOTO   0078
-.................... }
-.................... 
-.................... //==================== FUNCIONES ====================
-.................... void parsear_trama(char *buffer) {
-....................     if (buffer[0] == 0xFF) {        // Verificar el caracter de inicio
+....................     count++;                        // Incrementar el contador 
+0714:  INCF   1D,F
+....................  
+....................     if (count >= 4) {               // 256 ms 
+0716:  MOVF   1D,W
+0718:  SUBLW  03
+071A:  BTFSC  FD8.0
+071C:  BRA    08E0
+....................         count = 0;                // Reinicia el contador 
+071E:  CLRF   1D
+....................  
+....................         rpm_actual = (int_encoder * 240.0) / resolucion; // Calcula RPM (60 * 4) 
+0720:  CLRF   x61
+0722:  MOVFF  1C,60
+0726:  RCALL  01A8
+0728:  MOVFF  03,6B
+072C:  MOVFF  02,6A
+0730:  MOVFF  01,69
+0734:  MOVFF  00,68
+0738:  CLRF   x6F
+073A:  CLRF   x6E
+073C:  MOVLW  70
+073E:  MOVWF  x6D
+0740:  MOVLW  86
+0742:  MOVWF  x6C
+0744:  RCALL  01DE
+0746:  MOVFF  03,5F
+074A:  MOVFF  02,5E
+074E:  MOVFF  01,5D
+0752:  MOVFF  00,5C
+0756:  CLRF   x61
+0758:  MOVFF  1E,60
+075C:  RCALL  01A8
+075E:  MOVFF  5F,63
+0762:  MOVFF  5E,62
+0766:  MOVFF  5D,61
+076A:  MOVFF  5C,60
+076E:  MOVFF  03,67
+0772:  MOVFF  02,66
+0776:  MOVFF  01,65
+077A:  MOVFF  00,64
+077E:  BRA    02D0
+0780:  MOVFF  03,24
+0784:  MOVFF  02,23
+0788:  MOVFF  01,22
+078C:  MOVFF  00,21
+....................         int_encoder = 0;          // Reinicia contador del encoder 
+0790:  CLRF   1C
+....................  
+....................         if (rpm_anterior != 0) {  // Aplicar el filtro exponencial 
+0792:  MOVFF  28,5F
+0796:  MOVFF  27,5E
+079A:  MOVFF  26,5D
+079E:  MOVFF  25,5C
+07A2:  CLRF   x63
+07A4:  CLRF   x62
+07A6:  CLRF   x61
+07A8:  CLRF   x60
+07AA:  BRA    042C
+07AC:  BTFSC  FD8.2
+07AE:  BRA    08B8
+....................             rpm = (beta + 1) * (alpha * rpm_actual + ((1 - alpha) * rpm_anterior)); 
+07B0:  BCF    FD8.1
+07B2:  MOVFF  34,67
+07B6:  MOVFF  33,66
+07BA:  MOVFF  32,65
+07BE:  MOVFF  31,64
+07C2:  CLRF   x6B
+07C4:  CLRF   x6A
+07C6:  CLRF   x69
+07C8:  MOVLW  7F
+07CA:  MOVWF  x68
+07CC:  RCALL  04A4
+07CE:  MOVFF  03,5F
+07D2:  MOVFF  02,5E
+07D6:  MOVFF  01,5D
+07DA:  MOVFF  00,5C
+07DE:  MOVFF  30,6B
+07E2:  MOVFF  2F,6A
+07E6:  MOVFF  2E,69
+07EA:  MOVFF  2D,68
+07EE:  MOVFF  24,6F
+07F2:  MOVFF  23,6E
+07F6:  MOVFF  22,6D
+07FA:  MOVFF  21,6C
+07FE:  RCALL  01DE
+0800:  MOVFF  03,63
+0804:  MOVFF  02,62
+0808:  MOVFF  01,61
+080C:  MOVFF  00,60
+0810:  BSF    FD8.1
+0812:  CLRF   x67
+0814:  CLRF   x66
+0816:  CLRF   x65
+0818:  MOVLW  7F
+081A:  MOVWF  x64
+081C:  MOVFF  30,6B
+0820:  MOVFF  2F,6A
+0824:  MOVFF  2E,69
+0828:  MOVFF  2D,68
+082C:  RCALL  04A4
+082E:  MOVFF  03,67
+0832:  MOVFF  02,66
+0836:  MOVFF  01,65
+083A:  MOVFF  00,64
+083E:  MOVFF  03,6B
+0842:  MOVFF  02,6A
+0846:  MOVFF  01,69
+084A:  MOVFF  00,68
+084E:  MOVFF  28,6F
+0852:  MOVFF  27,6E
+0856:  MOVFF  26,6D
+085A:  MOVFF  25,6C
+085E:  RCALL  01DE
+0860:  BCF    FD8.1
+0862:  MOVFF  63,67
+0866:  MOVFF  62,66
+086A:  MOVFF  61,65
+086E:  MOVFF  60,64
+0872:  MOVFF  03,6B
+0876:  MOVFF  02,6A
+087A:  MOVFF  01,69
+087E:  MOVFF  00,68
+0882:  RCALL  04A4
+0884:  MOVFF  5F,6B
+0888:  MOVFF  5E,6A
+088C:  MOVFF  5D,69
+0890:  MOVFF  5C,68
+0894:  MOVFF  03,6F
+0898:  MOVFF  02,6E
+089C:  MOVFF  01,6D
+08A0:  MOVFF  00,6C
+08A4:  RCALL  01DE
+08A6:  MOVFF  03,2C
+08AA:  MOVFF  02,2B
+08AE:  MOVFF  01,2A
+08B2:  MOVFF  00,29
+....................         } else { 
+08B6:  BRA    08C8
+....................             rpm = rpm_actual; 
+08B8:  MOVFF  24,2C
+08BC:  MOVFF  23,2B
+08C0:  MOVFF  22,2A
+08C4:  MOVFF  21,29
+....................         } 
+....................         rpm_anterior = rpm;       // Actualiza rpm_anterior 
+08C8:  MOVFF  2C,28
+08CC:  MOVFF  2B,27
+08D0:  MOVFF  2A,26
+08D4:  MOVFF  29,25
+....................  
+....................         if (estado == 1) {        // Si el motor está encendido, notifica el nuevo RPM 
+08D8:  DECFSZ 20,W
+08DA:  BRA    08E0
+....................             rpm_listo = 1; 
+08DC:  MOVLW  01
+08DE:  MOVWF  41
+....................         } 
+....................     } 
+.................... } 
+....................  
+08E0:  BCF    FF2.2
+08E2:  GOTO   0078
+.................... #INT_RDA                            // Interrupción de recepción de datos seriales (RS232) 
+.................... void RDA_isr() { 
+08E6:  BTFSS  F9E.5
+08E8:  BRA    08E6
+08EA:  MOVFF  FAE,5C
+....................     char c = getc(); 
+....................     if (c == 0xFF) {                // Caracter de inicio 
+08EE:  INCFSZ 5C,W
+08F0:  BRA    08F4
+....................         i = 0;                      // Reinicia el índice del buffer 
+08F2:  CLRF   3F
+....................     } 
+....................     buffer[i] = c; 
+08F4:  CLRF   03
+08F6:  MOVF   3F,W
+08F8:  ADDLW  35
+08FA:  MOVWF  FE9
+08FC:  MOVLW  00
+08FE:  ADDWFC 03,W
+0900:  MOVWF  FEA
+0902:  MOVFF  5C,FEF
+....................     i++; 
+0906:  INCF   3F,F
+....................     if (i >= 3) {                   // Longitud de la trama de datos 
+0908:  MOVF   3F,W
+090A:  SUBLW  02
+090C:  BC    0914
+....................         datos_listos = 1; 
+090E:  MOVLW  01
+0910:  MOVWF  40
+....................         i = 0;                      // Reinicia el índice del buffer 
+0912:  CLRF   3F
+....................     } 
+0914:  BCF    F9E.5
+0916:  GOTO   0078
+.................... } 
+....................  
+.................... //==================== FUNCIONES ==================== 
+.................... void parsear_trama(char *buffer) { 
+....................     if (buffer[0] == 0xFF) {        // Verificar el caracter de inicio 
 *
-0924:  MOVF   42,W
-0926:  MOVWF  FE9
-0928:  MOVFF  43,FEA
-092C:  INCFSZ FEF,W
-092E:  BRA    0950
-....................         duty = buffer[1];
-0930:  MOVLW  01
-0932:  ADDWF  42,W
-0934:  MOVWF  FE9
-0936:  MOVLW  00
-0938:  ADDWFC 43,W
-093A:  MOVWF  FEA
-093C:  MOVFF  FEF,1F
-....................         estado = buffer[2];
-0940:  MOVLW  02
-0942:  ADDWF  42,W
-0944:  MOVWF  FE9
-0946:  MOVLW  00
-0948:  ADDWFC 43,W
-094A:  MOVWF  FEA
-094C:  MOVFF  FEF,20
-....................         // printf("Trama recibida: duty=%d, estado=%d\n", duty, estado); // Mensaje de depuración
-....................     }
-0950:  GOTO   0CCC (RETURN)
-.................... }
-.................... 
-.................... void main(){
+0922:  MOVF   42,W
+0924:  MOVWF  FE9
+0926:  MOVFF  43,FEA
+092A:  INCFSZ FEF,W
+092C:  BRA    094E
+....................         duty = buffer[1]; 
+092E:  MOVLW  01
+0930:  ADDWF  42,W
+0932:  MOVWF  FE9
+0934:  MOVLW  00
+0936:  ADDWFC 43,W
+0938:  MOVWF  FEA
+093A:  MOVFF  FEF,1F
+....................         estado = buffer[2]; 
+093E:  MOVLW  02
+0940:  ADDWF  42,W
+0942:  MOVWF  FE9
+0944:  MOVLW  00
+0946:  ADDWFC 43,W
+0948:  MOVWF  FEA
+094A:  MOVFF  FEF,20
+....................         // printf("Trama recibida: duty=%d, estado=%d\n", duty, estado); // Mensaje de depuración 
+....................     } 
+094E:  GOTO   0CCA (RETURN)
+.................... } 
+....................  
+.................... void main(){ 
 *
-0BD4:  CLRF   FF8
-0BD6:  BCF    FD0.7
-0BD8:  BSF    07.7
-0BDA:  MOVLW  50
-0BDC:  MOVWF  FD3
-0BDE:  CLRF   FD2
-0BE0:  CLRF   F9B
-0BE2:  BCF    FB8.3
-0BE4:  MOVLW  19
-0BE6:  MOVWF  FAF
-0BE8:  MOVLW  A6
-0BEA:  MOVWF  FAC
-0BEC:  MOVLW  90
-0BEE:  MOVWF  FAB
-0BF0:  MOVLW  58
-0BF2:  MOVWF  1A
-0BF4:  MOVLW  01
-0BF6:  MOVWF  1B
-0BF8:  CLRF   1C
-0BFA:  CLRF   1D
-0BFC:  MOVLW  08
-0BFE:  MOVWF  1E
-0C00:  CLRF   1F
-0C02:  CLRF   20
-0C04:  CLRF   24
-0C06:  CLRF   23
-0C08:  CLRF   22
-0C0A:  CLRF   21
-0C0C:  CLRF   28
-0C0E:  CLRF   27
-0C10:  CLRF   26
-0C12:  CLRF   25
-0C14:  CLRF   2C
-0C16:  CLRF   2B
-0C18:  CLRF   2A
-0C1A:  CLRF   29
-0C1C:  MOVLW  CD
-0C1E:  MOVWF  30
-0C20:  MOVLW  CC
-0C22:  MOVWF  2F
-0C24:  MOVLW  4C
-0C26:  MOVWF  2E
-0C28:  MOVLW  7E
-0C2A:  MOVWF  2D
-0C2C:  CLRF   34
-0C2E:  CLRF   33
-0C30:  CLRF   32
-0C32:  CLRF   31
-0C34:  CLRF   3F
-0C36:  CLRF   40
-0C38:  CLRF   41
-0C3A:  MOVLB  F
-0C3C:  CLRF   x5B
-0C3E:  CLRF   x5C
-0C40:  CLRF   x5D
-0C42:  CLRF   x5E
-0C44:  CLRF   x5F
-0C46:  CLRF   F9A
-0C48:  CLRF   F99
-0C4A:  CLRF   F98
-....................     // Habilitar interrupciones
-....................     enable_interrupts(INT_RDA);
-0C4C:  BSF    F9D.5
-....................     enable_interrupts(INT_EXT);
-0C4E:  BSF    FF2.4
-....................     enable_interrupts(INT_TIMER0);
-0C50:  BSF    FF2.5
-....................     enable_interrupts(GLOBAL);
-0C52:  MOVLW  C0
-0C54:  IORWF  FF2,F
-.................... 
-....................     // Configurar módulos y timers
-....................     setup_timer_2(T2_DIV_BY_16, timer2, poscaler);             // Timer2 para PWM (700 Hz)
-0C56:  MOVLW  01
-0C58:  SUBWF  1B,W
-0C5A:  MOVWF  01
-0C5C:  RLCF   01,W
-0C5E:  MOVWF  00
+0BD2:  CLRF   FF8
+0BD4:  BCF    FD0.7
+0BD6:  BSF    07.7
+0BD8:  MOVLW  50
+0BDA:  MOVWF  FD3
+0BDC:  CLRF   FD2
+0BDE:  CLRF   F9B
+0BE0:  BCF    FB8.3
+0BE2:  MOVLW  19
+0BE4:  MOVWF  FAF
+0BE6:  MOVLW  A6
+0BE8:  MOVWF  FAC
+0BEA:  MOVLW  90
+0BEC:  MOVWF  FAB
+0BEE:  MOVLW  58
+0BF0:  MOVWF  1A
+0BF2:  MOVLW  01
+0BF4:  MOVWF  1B
+0BF6:  CLRF   1C
+0BF8:  CLRF   1D
+0BFA:  MOVLW  08
+0BFC:  MOVWF  1E
+0BFE:  CLRF   1F
+0C00:  CLRF   20
+0C02:  CLRF   24
+0C04:  CLRF   23
+0C06:  CLRF   22
+0C08:  CLRF   21
+0C0A:  CLRF   28
+0C0C:  CLRF   27
+0C0E:  CLRF   26
+0C10:  CLRF   25
+0C12:  CLRF   2C
+0C14:  CLRF   2B
+0C16:  CLRF   2A
+0C18:  CLRF   29
+0C1A:  MOVLW  CD
+0C1C:  MOVWF  30
+0C1E:  MOVLW  CC
+0C20:  MOVWF  2F
+0C22:  MOVLW  4C
+0C24:  MOVWF  2E
+0C26:  MOVLW  7E
+0C28:  MOVWF  2D
+0C2A:  CLRF   34
+0C2C:  CLRF   33
+0C2E:  CLRF   32
+0C30:  CLRF   31
+0C32:  CLRF   3F
+0C34:  CLRF   40
+0C36:  CLRF   41
+0C38:  MOVLB  F
+0C3A:  CLRF   x5B
+0C3C:  CLRF   x5C
+0C3E:  CLRF   x5D
+0C40:  CLRF   x5E
+0C42:  CLRF   x5F
+0C44:  CLRF   F9A
+0C46:  CLRF   F99
+0C48:  CLRF   F98
+....................     // Habilitar interrupciones 
+....................     enable_interrupts(INT_RDA); 
+0C4A:  BSF    F9D.5
+....................     enable_interrupts(INT_EXT); 
+0C4C:  BSF    FF2.4
+....................     enable_interrupts(INT_TIMER0); 
+0C4E:  BSF    FF2.5
+....................     enable_interrupts(GLOBAL); 
+0C50:  MOVLW  C0
+0C52:  IORWF  FF2,F
+....................  
+....................     // Configurar módulos y timers 
+....................     setup_timer_2(T2_DIV_BY_16, timer2, poscaler);             // Timer2 para PWM (700 Hz) 
+0C54:  MOVLW  01
+0C56:  SUBWF  1B,W
+0C58:  MOVWF  01
+0C5A:  RLCF   01,W
+0C5C:  MOVWF  00
+0C5E:  RLCF   00,F
 0C60:  RLCF   00,F
-0C62:  RLCF   00,F
-0C64:  MOVLW  F8
-0C66:  ANDWF  00,F
-0C68:  MOVF   00,W
-0C6A:  IORLW  06
-0C6C:  MOVWF  FBA
-0C6E:  MOVFF  1A,FBB
-....................     setup_ccp1(CCP_PWM);                                        // Configurar módulo CCP1 en modo PWM
-0C72:  BCF    F94.2
-0C74:  BCF    F8B.2
-0C76:  MOVLW  0C
-0C78:  MOVWF  FBD
-0C7A:  CLRF   FB7
-0C7C:  CLRF   FB6
-0C7E:  MOVLW  01
-0C80:  MOVWF  FB9
-0C82:  BCF    x59.0
-....................     setup_timer_0(RTCC_INTERNAL | RTCC_8_BIT | RTCC_DIV_256);   // Configurar Timer0
-0C84:  MOVLW  C7
-0C86:  MOVWF  FD5
-.................... 
-....................     set_pwm1_duty(duty_porcentual[duty]);
-0C88:  BCF    FD8.0
-0C8A:  RLCF   1F,W
-0C8C:  CLRF   03
-0C8E:  MOVLB  0
-0C90:  CALL   00C6
-0C94:  TBLRD*+
-0C96:  MOVFF  FF5,03
-0C9A:  MOVWF  42
-0C9C:  MOVFF  03,43
-0CA0:  RRCF   43,F
-0CA2:  RRCF   42,F
-0CA4:  RRCF   43,F
-0CA6:  RRCF   42,F
-0CA8:  RRCF   43,F
-0CAA:  MOVFF  42,FBE
-0CAE:  RRCF   43,F
-0CB0:  RRCF   43,W
-0CB2:  ANDLW  30
-0CB4:  MOVWF  00
-0CB6:  MOVF   FBD,W
-0CB8:  ANDLW  CF
-0CBA:  IORWF  00,W
-0CBC:  MOVWF  FBD
-.................... 
-....................     while (true){
-....................         if (datos_listos) {
-0CBE:  MOVF   40,F
-0CC0:  BZ    0D08
-....................             datos_listos = 0;
-0CC2:  CLRF   40
-....................             parsear_trama(buffer);  // Parsear la trama de datos y actualizar variables
-0CC4:  CLRF   43
-0CC6:  MOVLW  35
-0CC8:  MOVWF  42
-0CCA:  BRA    0924
-....................             
-....................             if (estado) {
-0CCC:  MOVF   20,F
-0CCE:  BZ    0D06
-....................                 set_pwm1_duty(duty_porcentual[duty]);
-0CD0:  BCF    FD8.0
-0CD2:  RLCF   1F,W
-0CD4:  CLRF   03
-0CD6:  CALL   00C6
-0CDA:  TBLRD*+
-0CDC:  MOVFF  FF5,03
-0CE0:  MOVWF  42
-0CE2:  MOVFF  03,43
-0CE6:  RRCF   43,F
-0CE8:  RRCF   42,F
-0CEA:  RRCF   43,F
-0CEC:  RRCF   42,F
-0CEE:  RRCF   43,F
-0CF0:  MOVFF  42,FBE
-0CF4:  RRCF   43,F
-0CF6:  RRCF   43,W
-0CF8:  ANDLW  30
-0CFA:  MOVWF  00
-0CFC:  MOVF   FBD,W
-0CFE:  ANDLW  CF
-0D00:  IORWF  00,W
-0D02:  MOVWF  FBD
-....................                 //printf("Motor encendido: duty=%d\n", duty);
-....................             } else {
-0D04:  BRA    0D08
-....................                 set_pwm1_duty(0);
-0D06:  CLRF   FBE
-....................                 //printf("Motor apagado\n");
-....................             }
-....................         }
-....................         
-....................         // Procesar la impresión del RPM fuera de la ISR
-....................         if (rpm_listo) {
-0D08:  MOVF   41,F
-0D0A:  BZ    0D3A
-....................             rpm_listo = 0;
-0D0C:  CLRF   41
-....................             if (estado) {
-0D0E:  MOVF   20,F
-0D10:  BZ    0D3A
-....................                 printf("%.2f -\n", rpm);
-0D12:  MOVLW  89
-0D14:  MOVWF  FE9
-0D16:  MOVFF  2C,45
-0D1A:  MOVFF  2B,44
-0D1E:  MOVFF  2A,43
-0D22:  MOVFF  29,42
-0D26:  MOVLW  02
-0D28:  MOVWF  46
-0D2A:  BRA    0A22
-0D2C:  MOVLW  20
-0D2E:  MOVWF  FF6
-0D30:  MOVLW  09
-0D32:  MOVWF  FF7
-0D34:  MOVLW  03
-0D36:  MOVWF  42
-0D38:  BRA    0BB2
-....................             }
-....................         }
-0D3A:  BRA    0CBE
-....................     }
-.................... }
-0D3C:  SLEEP 
+0C62:  MOVLW  F8
+0C64:  ANDWF  00,F
+0C66:  MOVF   00,W
+0C68:  IORLW  06
+0C6A:  MOVWF  FBA
+0C6C:  MOVFF  1A,FBB
+....................     setup_ccp1(CCP_PWM);                                        // Configurar módulo CCP1 en modo PWM 
+0C70:  BCF    F94.2
+0C72:  BCF    F8B.2
+0C74:  MOVLW  0C
+0C76:  MOVWF  FBD
+0C78:  CLRF   FB7
+0C7A:  CLRF   FB6
+0C7C:  MOVLW  01
+0C7E:  MOVWF  FB9
+0C80:  BCF    x59.0
+....................     setup_timer_0(RTCC_INTERNAL | RTCC_8_BIT | RTCC_DIV_256);   // Configurar Timer0 
+0C82:  MOVLW  C7
+0C84:  MOVWF  FD5
+....................  
+....................     set_pwm1_duty(duty_porcentual[duty]); 
+0C86:  BCF    FD8.0
+0C88:  RLCF   1F,W
+0C8A:  CLRF   03
+0C8C:  MOVLB  0
+0C8E:  CALL   00C6
+0C92:  TBLRD*+
+0C94:  MOVFF  FF5,03
+0C98:  MOVWF  42
+0C9A:  MOVFF  03,43
+0C9E:  RRCF   43,F
+0CA0:  RRCF   42,F
+0CA2:  RRCF   43,F
+0CA4:  RRCF   42,F
+0CA6:  RRCF   43,F
+0CA8:  MOVFF  42,FBE
+0CAC:  RRCF   43,F
+0CAE:  RRCF   43,W
+0CB0:  ANDLW  30
+0CB2:  MOVWF  00
+0CB4:  MOVF   FBD,W
+0CB6:  ANDLW  CF
+0CB8:  IORWF  00,W
+0CBA:  MOVWF  FBD
+....................  
+....................     while (true){ 
+....................         if (datos_listos) { 
+0CBC:  MOVF   40,F
+0CBE:  BZ    0D06
+....................             datos_listos = 0; 
+0CC0:  CLRF   40
+....................             parsear_trama(buffer);  // Parsear la trama de datos y actualizar variables 
+0CC2:  CLRF   43
+0CC4:  MOVLW  35
+0CC6:  MOVWF  42
+0CC8:  BRA    0922
+....................              
+....................             if (estado) { 
+0CCA:  MOVF   20,F
+0CCC:  BZ    0D04
+....................                 set_pwm1_duty(duty_porcentual[duty]); 
+0CCE:  BCF    FD8.0
+0CD0:  RLCF   1F,W
+0CD2:  CLRF   03
+0CD4:  CALL   00C6
+0CD8:  TBLRD*+
+0CDA:  MOVFF  FF5,03
+0CDE:  MOVWF  42
+0CE0:  MOVFF  03,43
+0CE4:  RRCF   43,F
+0CE6:  RRCF   42,F
+0CE8:  RRCF   43,F
+0CEA:  RRCF   42,F
+0CEC:  RRCF   43,F
+0CEE:  MOVFF  42,FBE
+0CF2:  RRCF   43,F
+0CF4:  RRCF   43,W
+0CF6:  ANDLW  30
+0CF8:  MOVWF  00
+0CFA:  MOVF   FBD,W
+0CFC:  ANDLW  CF
+0CFE:  IORWF  00,W
+0D00:  MOVWF  FBD
+....................                 //printf("Motor encendido: duty=%d\n", duty); 
+....................             } else { 
+0D02:  BRA    0D06
+....................                 set_pwm1_duty(0); 
+0D04:  CLRF   FBE
+....................                 //printf("Motor apagado\n"); 
+....................             } 
+....................         } 
+....................          
+....................         // Procesar la impresión del RPM fuera de la ISR 
+....................         if (rpm_listo) { 
+0D06:  MOVF   41,F
+0D08:  BZ    0D38
+....................             rpm_listo = 0; 
+0D0A:  CLRF   41
+....................             if (estado) { 
+0D0C:  MOVF   20,F
+0D0E:  BZ    0D38
+....................                 printf("%.2f -\n", rpm); 
+0D10:  MOVLW  89
+0D12:  MOVWF  FE9
+0D14:  MOVFF  2C,45
+0D18:  MOVFF  2B,44
+0D1C:  MOVFF  2A,43
+0D20:  MOVFF  29,42
+0D24:  MOVLW  02
+0D26:  MOVWF  46
+0D28:  BRA    0A20
+0D2A:  MOVLW  1E
+0D2C:  MOVWF  FF6
+0D2E:  MOVLW  09
+0D30:  MOVWF  FF7
+0D32:  MOVLW  03
+0D34:  MOVWF  42
+0D36:  BRA    0BB0
+....................             } 
+....................         } 
+0D38:  BRA    0CBC
+....................     } 
+.................... } 
+0D3A:  SLEEP 
 
 Configuration Fuses:
    Word  1: C121   PLL3X NOPLLEN NOCPUDIV LS48MHZ XT PRIMARY_SW FCMEN IESO

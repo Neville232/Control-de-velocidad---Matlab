@@ -101,7 +101,7 @@ global_RPMmax = 1500;       % RPM maximo
 global_constM = 1;          % Pendiente de la recta
 global_constC = 0;          % Desplazamiento
 global_alpha = 0.2;         % Filtro
-global_beta = 0.9855;         % Filtro
+global_beta = 0.04;         % Filtro
 
 global_tiempo = [];
 global_magnitudes = [];
@@ -613,7 +613,7 @@ disp(['Dato recibido: ', num2str(rpm_actual)]);
 
 % Aplicar el filtro de media de movimiento
 if ~isempty(global_rpm_anterior) && global_rpm_anterior ~= 0
-    rpm = global_beta * ((global_alpha * rpm_actual + ((1 - global_alpha) * global_rpm_anterior)));
+    rpm = (1 - global_beta) * (global_alpha * rpm_actual + ((1 - global_alpha) * global_rpm_anterior));
 else
     rpm = rpm_actual;
 end

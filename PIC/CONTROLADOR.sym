@@ -67,8 +67,8 @@
 059     @DIV3232.@SCRATCH3
 05A     @DIV3232.@SCRATCH4
 05B     @DIV3232.@SCRATCH5
-05C     RDA_isr.c
 05C-05F @FLT.P1
+05C     RDA_isr.c
 05C     TIMER0_isr.@SCRATCH1
 05D     TIMER0_isr.@SCRATCH2
 05D     RDA_isr.@SCRATCH1
@@ -90,8 +90,8 @@
 065     @FLT.@SCRATCH2
 066     TIMER0_isr.@SCRATCH11
 067     TIMER0_isr.@SCRATCH12
-068-06B @MULFF.P1
-068-06B @ADDFF.P2
+068-06B @ADDFF.P1
+068-06B @MULFF.P2
 068     @DIVFF.@SCRATCH1
 069     @DIVFF.@SCRATCH2
 06A     @DIVFF.@SCRATCH3
@@ -112,17 +112,17 @@
 073     @ADDFF.@SCRATCH8
 F78.6   C2OUT
 F79.6   C1OUT
-F90     CCP_2
 F90     CCP_2_LOW
+F90     CCP_2
 F91     CCP_2_HIGH
-FBE     CCP_1
 FBE     CCP_1_LOW
+FBE     CCP_1
 FBF     CCP_1_HIGH
-FE1-FE2 @WRITE_PACKED_MEMORY.P1
-FE1-FE2 @READ_PACKED_MEMORY.P2
+FE1-FE2 @READ_PACKED_MEMORY.P1
+FE1-FE2 @WRITE_PACKED_MEMORY.P2
 FE9-FEA @READ_PROGRAM_MEMORY.P1
-FE9-FEA @WRITE_PROGRAM_MEMORY.P2
-FE9-FEA @WRITE_PACKED_MEMORY.P3
+FE9-FEA @WRITE_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PROGRAM_MEMORY.P3
 FE9-FEA @READ_PACKED_MEMORY.P4
 FF6-FF8 @READ_PROGRAM_MEMORY.P1
 FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
@@ -137,30 +137,31 @@ ROM Allocation:
 00042C  @FLT
 0004A4  @ADDFF
 00070E  TIMER0_isr
-0008E8  RDA_isr
-00091C  @const782.call
-000924  parsear_trama
-000954  @FTOSD
-000994  @DIV3232
-000A22  @PRINTF_L32D_9600_31766_31767FPFPF
-000BB2  @PSTRINGCN_9600_31766_31767
-000BD4  MAIN
-000BD4  @cinit1
-000C4C  @cinit2
+0008E6  RDA_isr
+00091A  @const709.call
+000922  parsear_trama
+000952  @FTOSD
+000992  @DIV3232
+000A20  @PRINTF_L32D_9600_31766_31767FPFPF
+000BB0  @PSTRINGCN_9600_31766_31767
+000BD2  MAIN
+000BD2  @cinit1
+000C4A  @cinit2
 
 Project Directory:
-    C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\
+    C:\Users\PC2\Documents\0 - Control de velocidad 14-03-2025\Control-de-velocidad---Matlab-main-14-03-2025\Control-de-velocidad---Matlab-main\PIC\
 
 Project Files:
-    CONTROLADOR.c                                           [05-mar.-25 23:06  CRC=98922D80]
-    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\18F45K50.h [07-mar.-23 19:25  CRC=7779E332]
+    CONTROLADOR.c                                           [30-Mar-24 20:15  CRC=F56BCCF8]
+    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\18F45K50.h [20-Jul-18 14:26  CRC=7616FACC]
 
-Source signature=8785F3E4
+Source signature=E199C290
 Program memory checksum=0000
-Hex file CRC=199B
+Program memory CRC=0000
+Hex file CRC=3FA4
 
 Units:
-    C:\Users\Nelvinson\Documents\1- UNIVERSIDAD\8 - LABORATORIO DE CONTROL\0 - Repositorio Lab. Control\PIC\CONTROLADOR (main)
+    CONTROLADOR (main)
 
 Compiler Settings:
     Processor:      PIC18F45K50
@@ -169,7 +170,7 @@ Compiler Settings:
     Opt Level:      9
     Short,Int,Long: UNSIGNED: 1,8,16
     Float,Double:   32,32
-    Compile Mode:   CCS5
+    Compile Mode:       CCS5
 
 Output Files:
     XREF file:   CONTROLADOR.xsym

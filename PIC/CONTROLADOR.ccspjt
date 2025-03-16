@@ -1,7 +1,7 @@
 [PROJECT]
 Target=CONTROLADOR.hex
 Processor_Text=PIC18F45K50
-CCSVersion=5.115
+CCSVersion=5.080
 Compiler=PCH
 [Target Data]
 FileList=CONTROLADOR.c
@@ -11,14 +11,25 @@ Type=4
 1=CONTROLADOR.c
 
 [defines]
-buildcount=12
+buildcount=13
 
 [Opened Files]
 1=CONTROLADOR.c
-t1=1
-Count=2
+t1=101
+Count=1
 2=..\..\Matlab v2\Primera entrega - Lab Control\ENCODER_MATLAB.c
 t2=25
+
+[fileformats]
+forcecoff=0
+
+[ProjectLog]
+Days=1
+D1=30-03-2024
+D1_L=3
+D1_L1=[72579]Project Opened.
+D1_L2=[72688]Started Editing.
+D1_L3=[73173]Stopped Editing.
 [Units]
 Count=1
 1=CONTROLADOR (main)
