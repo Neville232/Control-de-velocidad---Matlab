@@ -98,10 +98,10 @@ global global_beta
 
 % PARAMETRIZAR
 global_RPMmax = 1500;       % RPM maximo
-global_constM = 1;          % Pendiente de la recta
-global_constC = 0;          % Desplazamiento
+global_constM = 17.067;     % Pendiente de la recta
+global_constC = -118.33;    % Desplazamiento
 global_alpha = 0.2;         % Filtro
-global_beta = 0.9855;         % Filtro
+global_beta = 0.9855;       % Filtro
 
 global_tiempo = [];
 global_magnitudes = [];
@@ -372,6 +372,8 @@ global global_magnitudes
 global global_setpointPorcentaje
 global global_setpointRPM
 global global_s
+global global_constM
+global global_constC
 
 % Obtener el valor del edit_text con el tag input_setpoint
 setpointStr = get(handles.input_setpoint, 'String');
@@ -381,17 +383,16 @@ if ~isempty(setpointStr)
     % Convertir el valor a numero
     setpointValue = str2double(setpointStr);
     
-    % Verificar si la conversion fue exitosa y si esta en el rango 700-1400
-    if ~isnan(setpointValue) && setpointValue >= 700 && setpointValue <= 1500 && mod(setpointValue, 1) == 0
-        % Convertir el valor de RPM a porcentaje entero
-        porcentaje = round(setpointValue / 14);
-        global_setpointPorcentaje = porcentaje; % Actualizar el valor del setpoint
+    % Verificar si la conversion fue exitosa y si esta en el rango 735-1500
+    if ~isnan(setpointValue) && setpointValue >= 735 && setpointValue <= 1500 && mod(setpointValue, 1) == 0
+        % Convertir el valor de RPM a porcentaje usando la razón de cambio proporcionada
+        global_setpointPorcentaje = (setpointValue + global_constC) / global_constM; % Actualizar el valor del setpoint
         
         % Almacenar el setpoint en RPM para el cálculo de K
         global_setpointRPM = setpointValue;
         
         % Crear la trama de datos
-        trama = [255, global_setpointPorcentaje, global_motorState];
+        trama = [255, round(global_setpointPorcentaje), global_motorState];
         
         % Mostrar mensaje de depuración
         disp(['Enviando trama: ', num2str(trama)]);
@@ -433,7 +434,7 @@ if ~isempty(setpointStr)
         end
     else
         % Mostrar mensaje de error si la conversión falló o el valor no está en el rango
-        disp('Error: El valor ingresado no es un número entero válido entre 700 y 1400.');
+        disp('Error: El valor ingresado no es un número entero válido entre 735 y 1500.');
     end
 else
     % Mostrar mensaje de error si el edit_text está vacío
@@ -1026,9 +1027,13 @@ q1 = global_q1;
 % Calcular el control actual
 u_actual = u_anterior + (q0 * error_actual) + (q1 * error_anterior);
 
-% Asegurarse de que u_actual esté en el rango permitido (0-100%)
-cargaPWM = ((u_actual/global_RPMmax) * 100 * global_consM) + global_consC;
+% Asegurarse de que u_actual esté en el rango permitido (735-1500 RPM)
+u_actual = max(735, min(1500, u_actual));
 
+% Calcular la carga PWM correspondiente usando la razón de cambio proporcionada
+cargaPWM = (u_actual + global_constC) / global_constM;
+
+% Asegurarse de que cargaPWM esté en el rango permitido (0-100)
 cargaPWM = max(0, min(100, cargaPWM));
 
 % Actualizar los valores anteriores
@@ -1046,7 +1051,7 @@ if ~isempty(global_s) && isvalid(global_s) && strcmp(global_s.Status, 'open')
     disp(['q1: ', num2str(q1)]); % Mensaje de depuración
     disp(['u_anterior: ', num2str(u_anterior)]); % Mensaje de depuración
     disp(['u_actual: ', num2str(u_actual)]); % Mensaje de depuración
-    disp(['Salida de controlador: ', num2str(round(u_actual))]); % Imprimir la trama en la consola
+    disp(['Carga PWM: ', num2str(round(cargaPWM))]); % Imprimir la trama en la consola
     fwrite(global_s, trama, 'uint8');
 else
     disp('Error: El puerto serial no está abierto.');
