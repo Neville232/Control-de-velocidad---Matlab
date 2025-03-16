@@ -96,12 +96,21 @@ global global_constC
 global global_alpha
 global global_beta
 
+% Declarar variables globales para los colores
+global color_default
+global color_activo
+global color_inactivo
+
 % PARAMETRIZAR
 global_RPMmax = 1500;       % RPM maximo
 global_constM = 17.067;     % Pendiente de la recta
-global_constC = -118.33;    % Desplazamiento
+global_constC = 118.33;    % Desplazamiento
 global_alpha = 0.2;         % Filtro
 global_beta = 0.9855;       % Filtro
+
+color_default   = [0.94, 0.94, 0.94];
+color_activo    = [0.5, 1, 0.5];
+color_inactivo  = [1, 0.5, 0.5];
 
 global_tiempo = [];
 global_magnitudes = [];
@@ -118,7 +127,7 @@ global_controlando = 0;
 
 % Set the CloseRequestFcn
 set(handles.figure1, 'CloseRequestFcn', {@UI_CloseRequestFcn, handles});
-set(handles.button_connet, 'BackgroundColor', [0.5, 1, 0.5]);
+set(handles.button_connet, 'BackgroundColor', color_activo);
 % Actualizar el popupmenu con los puertos COM disponibles
 actualizarMenuCOM(handles);
 
@@ -302,6 +311,10 @@ end
 function button_connet_Callback(hObject, eventdata, handles)
 % Verificar si ya esta conectado al puerto serial
 global global_s
+global color_default
+global color_activo
+global color_inactivo
+
 if ~isempty(global_s) && isvalid(global_s) && strcmp(global_s.Status, 'open')
     return;
 end
@@ -326,9 +339,9 @@ fopen(global_s);
 disp(['Puerto serial ', puertoSerial, ' conectado.']);
 
 % Cambia de color el boton de iniciar
-set(handles.button_start, 'BackgroundColor', [0.5, 1, 0.5]);
-set(handles.button_connet, 'BackgroundColor', [0.94, 0.94, 0.94]);
-set(handles.button_disconnet, 'BackgroundColor', [1, 0.5, 0.5]);
+set(handles.button_send, 'BackgroundColor', color_activo);
+set(handles.button_connet, 'BackgroundColor', color_default);
+set(handles.button_disconnet, 'BackgroundColor', color_inactivo);
 
 % Guardar los cambios en handles
 guidata(hObject, handles);
@@ -341,15 +354,19 @@ function button_disconnet_Callback(hObject, eventdata, handles)
 % hObject    handle to boton_desconectar (see GCBO)
 % Variables globales necesarias:
 global global_s
+global color_default
+global color_activo
+global color_inactivo
+
 if ~isempty(global_s) && isvalid(global_s)
     fclose(global_s);
     delete(global_s);
     global_s = [];
     disp('Puerto serial desconectado.');
-    set(handles.button_start, 'BackgroundColor', [0.94, 0.94, 0.94]);
-    set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
-    set(handles.button_connet, 'BackgroundColor', [0.5, 1, 0.5]);
-    set(handles.button_disconnet, 'BackgroundColor', [0.94, 0.94, 0.94]);
+    set(handles.button_start, 'BackgroundColor', color_default);
+    set(handles.button_stop, 'BackgroundColor', color_default);
+    set(handles.button_connet, 'BackgroundColor', color_activo);
+    set(handles.button_disconnet, 'BackgroundColor', color_default);
 end
 
 % Guardar los cambios en handles
@@ -374,6 +391,10 @@ global global_setpointRPM
 global global_s
 global global_constM
 global global_constC
+
+global color_default
+global color_activo
+global color_inactivo
 
 % Obtener el valor del edit_text con el tag input_setpoint
 setpointStr = get(handles.input_setpoint, 'String');
@@ -441,6 +462,8 @@ else
     disp('Error: No se ingresó ningún valor.');
 end
 
+set(handles.button_start, 'BackgroundColor', color_activo);
+
 % Guardar los cambios en handles
 guidata(hObject, handles);
 
@@ -486,6 +509,10 @@ global global_controlando
 global global_timerControl
 global global_setpointPorcentaje
 
+global color_default
+global color_activo
+global color_inactivo
+
 setpoint = global_setpointPorcentaje;
 
 disp(['Setpoint start: ', num2str(setpoint)]);
@@ -497,16 +524,16 @@ if ~isempty(global_s) && isvalid(global_s)
     disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
     fwrite(global_s, trama, 'uint8'); % Enviar la trama de datos
     disp('Comando de inicio enviado.');
-    set(handles.button_stop, 'BackgroundColor', [0.5, 1, 0.5]);
-    set(handles.button_start, 'BackgroundColor', [0.94, 0.94, 0.94]);
+    set(handles.button_stop, 'BackgroundColor', color_inactivo);
+    set(handles.button_start, 'BackgroundColor', color_default);
     
     % Reiniciar la gráfica
     global_graficar = true;
     global_tiempoInicio = now; % Almacenar el tiempo de inicio
-    global_tiemposTranscurridos = []; % Reiniciar tiempos transcurridos
-    global_magnitudes = []; % Reiniciar magnitudes
-    global_stpoints = []; % Reiniciar setpoints
-    global_tiemposSetpoints = []; % Reiniciar tiempos de setpoints
+    global_tiemposTranscurridos = [0]; % Reiniciar tiempos transcurridos
+    global_magnitudes = [0]; % Reiniciar magnitudes
+    global_stpoints = [0]; % Reiniciar setpoints
+    global_tiemposSetpoints = [0]; % Reiniciar tiempos de setpoints
     
     % Almacenar el tiempo de inicio del motor
     global_tiempoInicioMotor = now;
@@ -545,6 +572,10 @@ global global_stpointValue
 global global_timer
 global global_s
 
+global color_default
+global color_activo
+global color_inactivo
+
 if ~isempty(global_s) && isvalid(global_s)
     global_setpointValue = 0; % Detener el motor
     trama = [255, global_setpointValue, 1]; % Crear la trama de datos
@@ -556,8 +587,8 @@ if ~isempty(global_s) && isvalid(global_s)
     disp(['Enviando trama: ', num2str(trama)]); % Mensaje de depuración
     fwrite(global_s, trama, 'uint8'); % Enviar la trama de datos
     disp('Comando de parada enviado.');
-    set(handles.button_start, 'BackgroundColor', [0.5, 1, 0.5]);
-    set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
+    set(handles.button_start, 'BackgroundColor', color_activo);
+    set(handles.button_stop, 'BackgroundColor', color_default);
     
     % Detener y eliminar el temporizador global_timer si existe
     if ~isempty(global_timer) && isvalid(global_timer)
@@ -717,6 +748,10 @@ global global_L
 global global_s
 global global_setpointRPM
 
+global color_default
+global color_activo
+global color_inactivo
+
 % Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
 intervalo = 10; % Intervalo de tiempo en segundos
 umbralVariacion = 0.02; % Variacion maxima permitida (2%)
@@ -732,7 +767,7 @@ if ~isempty(indicesRecientes)
 
     if variacion <= umbralVariacion
         disp('Se ha alcanzado el establecimiento del sistema.');
-        set(handles.button_stop, 'BackgroundColor', [0.94, 0.94, 0.94]);
+        set(handles.button_stop, 'BackgroundColor', color_default);
         valorFinalPromedio = mean(magnitudesRecientes);
         disp(['Valor final promedio: ', num2str(valorFinalPromedio)]);
         valor63 = 0.63 * valorFinalPromedio;
@@ -808,6 +843,7 @@ if ~isempty(indicesRecientes)
             
             % Cambiar el estado a 2 (control)
             global_estado = 2;
+            set(handles.calcular_controlador, 'BackgroundColor', color_activo);
         
         else
             disp('No se pudo determinar el tiempo en el que la magnitud alcanza el 63% o el 28.3% del valor final.');
@@ -831,6 +867,10 @@ global global_magnitudes
 global global_stpoints
 global global_tiemposSetpoints
 
+global color_default
+global color_activo
+global color_inactivo
+
 disp('Controlando el sistema...');
 % Actualizar la gráfica en el axes con el tag grafica_1
 if global_graficar
@@ -853,6 +893,10 @@ global global_K
 global global_L
 global global_q0
 global global_q1
+
+global color_default
+global color_activo
+global color_inactivo
 
 % Asegurarse de que los valores de thau, K y L estén disponibles
 if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
@@ -882,6 +926,10 @@ if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
         % Actualizar los static text con los tag label_Kc y label_ti
         set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
         set(handles.label_ti, 'String', num2str(ti, '%.2f'));
+
+        set(handles.controlar, 'BackgroundColor', color_activo);
+        set(handles.calcular_controlador, 'BackgroundColor', color_default);
+
     else
         disp('Error: ti no es un escalar.');
     end
@@ -889,47 +937,14 @@ else
     disp('Error: Los valores de thau, K y L no están disponibles.');
 end
 
+
+
 % Guardar los cambios en handles
 guidata(hObject, handles);
 
 
 %% ===========================================================================================
 
-function controlar_Callback(hObject, eventdata, handles)
-% hObject    handle to controlar (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Variables globales necesarias:
-global global_thau
-global global_K
-global global_L
-global global_timerControl
-global global_setpointRPM
-global global_controlando
-
-% Asegurarse de que los valores de thau, K y L estén disponibles
-if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
-    % Definir el tiempo de muestreo en segundos
-    tiempoMuestreo = 0.256; % Ajusta este valor según sea necesario
-    
-    global_u_anterior = 0;
-    global_error_anterior = global_setpointRPM;
-
-    global_controlando = 1;
-    
-    % Cambiar el color del botón para indicar que está activo
-    set(handles.controlar, 'BackgroundColor', [0.5, 1, 0.5]);
-    
-    % Guardar los cambios en handles
-    guidata(hObject, handles);
-else
-    disp('Error: Los valores de thau, K y L no están disponibles.');
-end
-
-
-%% ===========================================================================================
-
 
 function controlar_Callback(hObject, eventdata, handles)
 % hObject    handle to controlar (see GCBO)
@@ -942,6 +957,10 @@ global global_K
 global global_L
 global global_timerControl
 global global_setpointRPM
+
+global color_default
+global color_activo
+global color_inactivo
 
 % Asegurarse de que los valores de thau, K y L estén disponibles
 if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
@@ -959,7 +978,7 @@ if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
     start(global_timerControl);
     
     % Cambiar el color del botón para indicar que está activo
-    set(handles.controlar, 'BackgroundColor', [0.5, 1, 0.5]);
+    set(handles.controlar, 'BackgroundColor', color_inactivo);
     
     % Guardar los cambios en handles
     guidata(hObject, handles);
