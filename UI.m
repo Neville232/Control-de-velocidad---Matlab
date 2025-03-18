@@ -22,7 +22,7 @@ function varargout = UI(varargin)
 
 % Edit the above text to modify the response to help UI
 
-% Last Modified by GUIDE v2.5 16-Mar-2025 17:56:35
+% Last Modified by GUIDE v2.5 17-Mar-2025 19:19:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -384,7 +384,23 @@ guidata(hObject, handles);
 
 
 function button_send_Callback(hObject, eventdata, handles)
-% hObject    handle to boton_enviar (see GCBO)
+global global_SCADA
+
+% Obtener el valor del edit_text con el tag input_setpoint
+setpointStr = get(handles.input_setpoint, 'String');
+
+if global_SCADA == 0
+    % Llamar a la función send_setpoint
+    send_setpoint(handles, setpointStr);
+else
+    disp('Se esta estableciendo control desde el SCADA');
+end
+
+
+%% ===========================================================================================
+
+
+function send_setpoint(handles, setpointStr)
 % Variables globales necesarias:
 global global_motorState
 global global_tiempoInicio
@@ -402,9 +418,6 @@ global global_constC
 global color_default
 global color_activo
 global color_inactivo
-
-% Obtener el valor del edit_text con el tag input_setpoint
-setpointStr = get(handles.input_setpoint, 'String');
 
 % Verificar si el edit_text tiene contenido
 if ~isempty(setpointStr)
@@ -472,7 +485,10 @@ end
 set(handles.button_start, 'BackgroundColor', color_activo);
 
 % Guardar los cambios en handles
-guidata(hObject, handles);
+guidata(handles.figure1, handles);
+
+
+%% ===========================================================================================
 
 
 function input_setpoint_Callback(hObject, eventdata, handles)
@@ -1155,10 +1171,21 @@ global_timerJSON = timer('ExecutionMode', 'fixedRate', 'Period', 0.25, 'TimerFcn
 start(global_timerJSON);
 
 
+function scada_off_Callback(hObject, eventdata, handles)
+global global_timerJSON
+
+% Detener y eliminar el temporizador global_timerJSON si existe
+if ~isempty(global_timerJSON) && isvalid(global_timerJSON)
+    stop(global_timerJSON);
+    delete(global_timerJSON);
+    global_timerJSON = [];
+    disp('Temporizador global_timerJSON detenido y eliminado.');
+end
 
 
 function readAndDisplayJSON(~, ~, handles)
 global global_ruta_rx
+global global_SCADA 
 
 % Verificar si la ruta del archivo JSON está definida
 if isempty(global_ruta_rx) || isequal(global_ruta_rx, 0)
@@ -1175,13 +1202,19 @@ if exist(jsonFilePath, 'file') ~= 2
     return;
 end
 
-% Leer el archivo JSON
-inputjson = loadjson(jsonFilePath);
+% Intentar abrir y leer el archivo JSON
+try
+    inputjson = loadjson(jsonFilePath);
+catch ME
+    disp(['Error al leer el archivo JSON: ', ME.message]);
+    return;
+end
 
 % Mostrar el contenido del archivo JSON
 disp(['Setpoint: ', num2str(inputjson.setpoint)]);
 disp(['Estado del motor: ', num2str(inputjson.estado_motor)]);
 disp(['Emergencia: ', num2str(inputjson.emergencia)]);
+disp(['SCADA: ', num2str(inputjson.SCADA)]);
 
 % Actualizar las etiquetas en la interfaz gráfica
 set(handles.label_setpoint_SCADA, 'String', num2str(inputjson.setpoint));
@@ -1197,6 +1230,77 @@ if inputjson.emergencia == 1
 else
     set(handles.label_emergencia_SCADA, 'String', 'Off');
 end
+
+global_SCADA = inputjson.SCADA;
+
+if global_SCADA == 1
+    send_setpoint(handles, num2str(inputjson.setpoint));
+end
+
+
+
+%% ===========================================================================================
+
+
+function readAndDisplayJSON(~, ~, handles)
+global global_ruta_rx
+global global_SCADA 
+
+% Verificar si la ruta del archivo JSON está definida
+if isempty(global_ruta_rx) || isequal(global_ruta_rx, 0)
+    disp('No se ha seleccionado ninguna carpeta.');
+    return;
+end
+
+% Construir la ruta completa del archivo JSON
+jsonFilePath = fullfile(global_ruta_rx, 'rx.JSON');
+
+% Verificar si el archivo JSON existe
+if exist(jsonFilePath, 'file') ~= 2
+    disp('El archivo rx.JSON no existe en la ruta especificada.');
+    return;
+end
+
+% Intentar abrir y leer el archivo JSON
+try
+    inputjson = loadjson(jsonFilePath);
+catch ME
+    disp(['Error al leer el archivo JSON: ', ME.message]);
+    return;
+end
+
+% Mostrar el contenido del archivo JSON
+disp(['Setpoint: ', num2str(inputjson.setpoint)]);
+disp(['Estado del motor: ', num2str(inputjson.estado_motor)]);
+disp(['Emergencia: ', num2str(inputjson.emergencia)]);
+disp(['SCADA: ', num2str(inputjson.SCADA)]);
+
+% Actualizar las etiquetas en la interfaz gráfica
+set(handles.label_setpoint_SCADA, 'String', num2str(inputjson.setpoint));
+
+if inputjson.estado_motor == 1
+    set(handles.label_motor_SCADA, 'String', 'On');
+else
+    set(handles.label_motor_SCADA, 'String', 'Off');
+end
+
+if inputjson.emergencia == 1
+    set(handles.label_emergencia_SCADA, 'String', 'On');
+else
+    set(handles.label_emergencia_SCADA, 'String', 'Off');
+end
+
+global_SCADA = inputjson.SCADA;
+
+if global_SCADA == 1
+    send_setpoint(handles, num2str(inputjson.setpoint));
+end
+
+
+
+%% ===========================================================================================
+
+
 
 
 
@@ -1220,3 +1324,4 @@ function minima_Callback(hObject, eventdata, handles)
 % hObject    handle to minima (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+ 
