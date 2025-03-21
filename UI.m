@@ -56,6 +56,11 @@ clc;
 % Choose default command line output for UI
 handles.output = hObject;
 
+% Si se pasa una posición como argumento, establecerla
+if ~isempty(varargin)
+    set(hObject, 'Position', varargin{1});
+end
+
 % Inicializar variables para almacenar datos y tiempo
 handles.datos = [];
 
@@ -642,6 +647,7 @@ function serialCallback(obj, event, hObject)
 % obj    handle to the serial object
 % event  structure with event data
 % hObject handle to the figure
+
 % Variables globales necesarias:
 global global_tiemposTranscurridos
 global global_tiempoInicio
@@ -654,6 +660,7 @@ global global_rpm_anterior
 global global_s
 global global_alpha
 global global_beta
+global global_setpointRPM % Nueva variable global añadida
 
 % Obtener handles actualizados
 handles = guidata(hObject);
@@ -670,10 +677,9 @@ end
 % Eliminar el terminador '-' del dato recibido
 dato = strrep(dato, '-', '');
 
-% Convertir el dato a numero
+% Convertir el dato a número
 rpm_actual = str2double(dato);
 disp(['Dato recibido: ', num2str(rpm_actual)]);
-
 
 % Aplicar el filtro de media de movimiento
 if ~isempty(global_rpm_anterior) && global_rpm_anterior ~= 0
@@ -692,7 +698,7 @@ if isempty(global_tiemposTranscurridos)
 end
 
 % Calcular el tiempo en segundos desde el primer dato
-tiempoTranscurrido = (tiempoActual - global_tiempoInicio) * 24 * 3600; % Convertir dias a segundos
+tiempoTranscurrido = (tiempoActual - global_tiempoInicio) * 24 * 3600; % Convertir días a segundos
 
 % Almacenar los valores de magnitud y tiempo transcurrido
 global_magnitudes = [global_magnitudes, rpm];
@@ -707,7 +713,7 @@ elseif global_estado == 2
     controlarSistema(handles, tiempoTranscurrido, rpm);
 end
 
-% Actualizar la grafica en el axes con el tag grafica_1
+% Actualizar la gráfica en el axes con el tag grafica_1
 if global_graficar
     axes(handles.graph_1);
     plot(handles.graph_1, global_tiemposTranscurridos, global_magnitudes, 'b', ...
@@ -716,7 +722,10 @@ if global_graficar
     ylabel(handles.graph_1, 'RPM');
     title(handles.graph_1, 'Grafica de RPM vs Tiempo');
 end
+
+% Actualizar la etiqueta de RPM
 set(handles.label_rpm, 'String', [num2str(rpm), ' RPM']);
+
 % Guardar los cambios en handles
 guidata(hObject, handles);
 
@@ -759,8 +768,33 @@ xlabel(handles.graph_1, 'Tiempo (s)');
 ylabel(handles.graph_1, 'RPM');
 title(handles.graph_1, 'Grafica de RPM vs Tiempo');
 
+% Llamar a la función para actualizar el porcentaje de error
+updateError(handles);
+
 % Guardar los cambios en handles
 guidata(hObject, handles);
+
+
+
+function updateError(handles)
+% Variables globales necesarias
+global global_magnitudes
+global global_setpointRPM
+
+% Verificar si hay datos disponibles
+if ~isempty(global_magnitudes) && ~isempty(global_setpointRPM) && global_setpointRPM ~= 0
+    % Obtener el último valor de RPM
+    rpm_actual = global_magnitudes(end);
+    
+    % Calcular el porcentaje de error
+    porcentaje_error = abs((global_setpointRPM - rpm_actual) / global_setpointRPM) * 100;
+    
+    % Mostrar el porcentaje de error en el tag label_error
+    set(handles.label_error, 'String', [num2str(porcentaje_error, '%.2f'), '%']);
+else
+    % Si no hay datos, mostrar "N/A"
+    set(handles.label_error, 'String', 'N/A');
+end
 
 
 %% ===========================================================================================
@@ -777,16 +811,18 @@ global global_estado
 global global_thau
 global global_K
 global global_L
-global global_s
 global global_setpointRPM
 
 global color_default
 global color_activo
 global color_inactivo
 
-% Verificar la variacion de las muestras en el intervalo de tiempo de 3 segundos
+global global_s
+global global_timer
+
+% Verificar la variación de las muestras en el intervalo de tiempo de 3 segundos
 global global_intervalo % Intervalo de tiempo en segundos
-global global_umbralVariacion % Variacion maxima permitida
+global global_umbralVariacion % Variación máxima permitida
 
 % Encontrar las muestras dentro del intervalo de tiempo
 indicesRecientes = find(global_tiemposTranscurridos >= (tiempoTranscurrido - global_intervalo));
@@ -850,7 +886,7 @@ if ~isempty(indicesRecientes)
             disp(['L: ', num2str(L)]);
             
             % Actualizar el static text con el tag label_thau
-            set(handles.label_thau, 'String', [num2str(thau, '%.2f'), ' + s']);
+            set(handles.label_thau, 'String', [num2str(thau, '%.2f'), 's + 1']);
             
             set(handles.label_k, 'String', num2str(K, '%.2f'));
             set(handles.label_L, 'String', ['-', num2str(L, '%.2f'), 's']);
@@ -858,7 +894,21 @@ if ~isempty(indicesRecientes)
             num = [K];
             den = [thau 1];
             sys = tf(num, den, 'InputDelay', L); % Incluir el retardo L en la función de transferencia
-            step(sys);
+            
+            % Obtener los datos de la respuesta al escalón
+            [y, t] = step(sys);
+            
+            % Seleccionar el axes con el tag transfer
+            axes(handles.transfer); % Seleccionar el axes
+            cla(handles.transfer, 'reset'); % Limpiar el contenido del axes
+            
+            % Graficar la respuesta al escalón
+            plot(handles.transfer, t, y, 'b', 'LineWidth', 1.5); % Graficar la respuesta al escalón
+            xlabel(handles.transfer, 'Tiempo (s)');
+            ylabel(handles.transfer, 'Salida');
+            title(handles.transfer, 'Respuesta al Escalon');
+            grid(handles.transfer, 'on'); % Agregar una cuadrícula al gráfico
+
             obj = stepinfo(sys);
             ts = obj.SettlingTime;
             mp = obj.Overshoot * 100;
@@ -965,7 +1015,7 @@ if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
 
         % Actualizar los static text con los tag label_Kc y label_ti
         set(handles.label_Kc, 'String', num2str(Kc, '%.2f'));
-        set(handles.label_ti, 'String', num2str(ti, '%.2f'));
+        set(handles.label_ti, 'String', [num2str(ti, '%.2f'), 's']);
 
         set(handles.controlar, 'BackgroundColor', color_activo);
         set(handles.calcular_controlador, 'BackgroundColor', color_default);
@@ -997,6 +1047,10 @@ global global_K
 global global_L
 global global_timerControl
 global global_setpointRPM
+global global_tiemposTranscurridos
+global global_magnitudes
+global global_rpm_anterior
+global global_graficar
 
 global color_default
 global color_activo
@@ -1004,6 +1058,12 @@ global color_inactivo
 
 % Asegurarse de que los valores de thau, K y L estén disponibles
 if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
+    % Reiniciar las variables relacionadas con la gráfica
+    global_tiemposTranscurridos = [0]; % Reiniciar tiempos transcurridos
+    global_magnitudes = [0]; % Reiniciar magnitudes
+    global_rpm_anterior = 0; % Reiniciar RPM anterior
+    global_graficar = true; % Habilitar la gráfica
+
     % Definir el tiempo de muestreo en segundos
     tiempoMuestreo = 0.256; % Ajusta este valor según sea necesario
     
@@ -1120,6 +1180,8 @@ end
 guidata(hObject, handles);
 
 
+%% ===========================================================================================
+
 
 function ruta_tx_Callback(hObject, eventdata, handles)
 global global_ruta_tx
@@ -1132,6 +1194,9 @@ if global_ruta_tx ~= 0
 else
     set(handles.label_tx, 'String', 'No se ha seleccionado ninguna carpeta');
 end
+
+
+%% ===========================================================================================
 
 
 % --- Executes on button press in ruta_rx.
@@ -1148,95 +1213,45 @@ else
 end
 
 
-
-function scada_off_Callback(hObject, eventdata, handles)
-global global_timerJSON
-
-% Detener y eliminar el temporizador global_timerJSON si existe
-if ~isempty(global_timerJSON) && isvalid(global_timerJSON)
-    stop(global_timerJSON);
-    delete(global_timerJSON);
-    global_timerJSON = [];
-    disp('Temporizador global_timerJSON detenido y eliminado.');
-end
+%% ===========================================================================================
 
 
 function scada_on_Callback(hObject, eventdata, handles)
 global global_timerJSON
 
-% Crear un objeto timer
-global_timerJSON = timer('ExecutionMode', 'fixedRate', 'Period', 0.25, 'TimerFcn', {@readAndDisplayJSON, handles});
+% Crear un objeto timer que ejecute tanto la lectura como la escritura
+global_timerJSON = timer('ExecutionMode', 'fixedRate', 'Period', 0.25, ...
+    'TimerFcn', {@scadaReadWrite, handles});
 
 % Iniciar el timer
 start(global_timerJSON);
+disp('Temporizador SCADA iniciado (lectura y escritura).');
+
+
+%% ===========================================================================================
 
 
 function scada_off_Callback(hObject, eventdata, handles)
 global global_timerJSON
+global color_default
 
 % Detener y eliminar el temporizador global_timerJSON si existe
 if ~isempty(global_timerJSON) && isvalid(global_timerJSON)
     stop(global_timerJSON);
     delete(global_timerJSON);
     global_timerJSON = [];
-    disp('Temporizador global_timerJSON detenido y eliminado.');
+    set(handles.label_SCADA, 'BackgroundColor', color_default);
+    disp('Temporizador SCADA detenido y eliminado.');
 end
 
 
-function readAndDisplayJSON(~, ~, handles)
-global global_ruta_rx
-global global_SCADA 
+%% ===========================================================================================
 
-% Verificar si la ruta del archivo JSON está definida
-if isempty(global_ruta_rx) || isequal(global_ruta_rx, 0)
-    disp('No se ha seleccionado ninguna carpeta.');
-    return;
-end
 
-% Construir la ruta completa del archivo JSON
-jsonFilePath = fullfile(global_ruta_rx, 'rx.JSON');
-
-% Verificar si el archivo JSON existe
-if exist(jsonFilePath, 'file') ~= 2
-    disp('El archivo rx.JSON no existe en la ruta especificada.');
-    return;
-end
-
-% Intentar abrir y leer el archivo JSON
-try
-    inputjson = loadjson(jsonFilePath);
-catch ME
-    disp(['Error al leer el archivo JSON: ', ME.message]);
-    return;
-end
-
-% Mostrar el contenido del archivo JSON
-disp(['Setpoint: ', num2str(inputjson.setpoint)]);
-disp(['Estado del motor: ', num2str(inputjson.estado_motor)]);
-disp(['Emergencia: ', num2str(inputjson.emergencia)]);
-disp(['SCADA: ', num2str(inputjson.SCADA)]);
-
-% Actualizar las etiquetas en la interfaz gráfica
-set(handles.label_setpoint_SCADA, 'String', num2str(inputjson.setpoint));
-
-if inputjson.estado_motor == 1
-    set(handles.label_motor_SCADA, 'String', 'On');
-else
-    set(handles.label_motor_SCADA, 'String', 'Off');
-end
-
-if inputjson.emergencia == 1
-    set(handles.label_emergencia_SCADA, 'String', 'On');
-else
-    set(handles.label_emergencia_SCADA, 'String', 'Off');
-end
-
-global_SCADA = inputjson.SCADA;
-
-if global_SCADA == 1
-    send_setpoint(handles, num2str(inputjson.setpoint));
-end
-
+function scadaReadWrite(~, ~, handles)
+% Esta función ejecuta tanto la lectura como la escritura en JSON
+readAndDisplayJSON([], [], handles); % Llamar a la función de lectura
+writeToJSON(handles);               % Llamar a la función de escritura
 
 
 %% ===========================================================================================
@@ -1244,7 +1259,9 @@ end
 
 function readAndDisplayJSON(~, ~, handles)
 global global_ruta_rx
-global global_SCADA 
+global global_SCADA
+global color_activo
+global color_default
 
 % Verificar si la ruta del archivo JSON está definida
 if isempty(global_ruta_rx) || isequal(global_ruta_rx, 0)
@@ -1290,12 +1307,62 @@ else
     set(handles.label_emergencia_SCADA, 'String', 'Off');
 end
 
+% Actualizar el valor de global_SCADA
 global_SCADA = inputjson.SCADA;
 
+% Cambiar el color del tag label_SCADA según el valor de global_SCADA
+if global_SCADA == 1
+    set(handles.label_SCADA, 'BackgroundColor', color_activo);
+else
+    set(handles.label_SCADA, 'BackgroundColor', color_default);
+end
+
+% Si SCADA está activo, enviar el setpoint
 if global_SCADA == 1
     send_setpoint(handles, num2str(inputjson.setpoint));
 end
 
+
+%% ===========================================================================================
+
+
+function writeToJSON(handles)
+% Variables globales necesarias
+global global_ruta_tx
+global global_magnitudes
+global global_K
+global global_thau
+global global_L
+
+% Verificar si la ruta del archivo JSON está definida
+if isempty(global_ruta_tx) || isequal(global_ruta_tx, 0)
+    disp('No se ha seleccionado ninguna carpeta para guardar el archivo JSON.');
+    return;
+end
+
+% Construir la ruta completa del archivo JSON
+jsonFilePath = fullfile(global_ruta_tx, 'tx.JSON');
+
+% Obtener el último valor de RPM
+if ~isempty(global_magnitudes)
+    rpm_actual = global_magnitudes(end);
+else
+    rpm_actual = 0; % Si no hay datos, establecer RPM en 0
+end
+
+% Crear una estructura de datos para guardar en el JSON
+data.RPM = rpm_actual;
+data.K = global_K;
+data.thau = global_thau;
+data.L = global_L;
+
+% Guardar la estructura en un archivo JSON
+try
+    savejson('', data, jsonFilePath);
+    disp(['Archivo JSON guardado en: ', jsonFilePath]);
+catch ME
+    disp(['Error al guardar el archivo JSON: ', ME.message]);
+end
 
 
 %% ===========================================================================================
@@ -1311,6 +1378,9 @@ function maxima_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Establecer el valor máximo permitido en el input_setpoint
+set(handles.input_setpoint, 'String', '1500'); % Valor máximo de RPM
+
 
 % --- Executes on button press in media.
 function media_Callback(hObject, eventdata, handles)
@@ -1318,10 +1388,15 @@ function media_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Establecer el valor medio permitido en el input_setpoint
+set(handles.input_setpoint, 'String', '1120'); % Valor medio de RPM (aproximado)
+
 
 % --- Executes on button press in minima.
 function minima_Callback(hObject, eventdata, handles)
 % hObject    handle to minima (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
- 
+
+% Establecer el valor mínimo permitido en el input_setpoint
+set(handles.input_setpoint, 'String', '740'); % Valor mínimo de RPM

@@ -1,6 +1,6 @@
 {
-    "setpoint": 1100,
+    "setpoint": 1200,
     "estado_motor": 1,
     "emergencia": 0,
-    "SCADA": 0
+    "SCADA": 1
 }
