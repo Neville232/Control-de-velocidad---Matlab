@@ -775,6 +775,8 @@ updateError(handles);
 guidata(hObject, handles);
 
 
+%% ===========================================================================================
+
 
 function updateError(handles)
 % Variables globales necesarias
@@ -1026,8 +1028,6 @@ if ~isempty(global_thau) && ~isempty(global_K) && ~isempty(global_L)
 else
     disp('Error: Los valores de thau, K y L no están disponibles.');
 end
-
-
 
 % Guardar los cambios en handles
 guidata(hObject, handles);
@@ -1368,10 +1368,6 @@ end
 %% ===========================================================================================
 
 
-
-
-
-
 % --- Executes on button press in maxima.
 function maxima_Callback(hObject, eventdata, handles)
 % hObject    handle to maxima (see GCBO)
@@ -1382,6 +1378,9 @@ function maxima_Callback(hObject, eventdata, handles)
 set(handles.input_setpoint, 'String', '1500'); % Valor máximo de RPM
 
 
+%% ===========================================================================================
+
+
 % --- Executes on button press in media.
 function media_Callback(hObject, eventdata, handles)
 % hObject    handle to media (see GCBO)
@@ -1390,6 +1389,9 @@ function media_Callback(hObject, eventdata, handles)
 
 % Establecer el valor medio permitido en el input_setpoint
 set(handles.input_setpoint, 'String', '1120'); % Valor medio de RPM (aproximado)
+
+
+%% ===========================================================================================
 
 
 % --- Executes on button press in minima.
