@@ -55,6 +55,20 @@ function MAIN_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for MAIN
 handles.output = hObject;
 
+axes(handles.img_molino);
+[x,map] = imread('IMAGENES/molino.png');
+image(x)
+colormap(map);
+axis off
+hold on
+
+axes(handles.img_unexpo);
+[y,map1] = imread('IMAGENES/unexpo.png');
+image(y)
+colormap(map1);
+axis off
+hold on
+
 % Update handles structure
 guidata(hObject, handles);
 
